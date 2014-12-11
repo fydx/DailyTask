@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>IDESourceControlProjectFavoriteDictionaryKey</key>
+	<false/>
+	<key>IDESourceControlProjectIdentifier</key>
+	<string>328C305A-1E8E-43BD-AEE2-AA43BE648573</string>
+	<key>IDESourceControlProjectName</key>
+	<string>DaliyTask</string>
+	<key>IDESourceControlProjectOriginsDictionary</key>
+	<dict>
+		<key>363200109B4FCFBD3A4BB8D44CEDA009E73D1E26</key>
+		<string>bitbucket.org:fydx/daliytask.git</string>
+	</dict>
+	<key>IDESourceControlProjectPath</key>
+	<string>DaliyTask.xcodeproj</string>
+	<key>IDESourceControlProjectRelativeInstallPathDictionary</key>
+	<dict>
+		<key>363200109B4FCFBD3A4BB8D44CEDA009E73D1E26</key>
+		<string>../..</string>
+	</dict>
+	<key>IDESourceControlProjectURL</key>
+	<string>bitbucket.org:fydx/daliytask.git</string>
+	<key>IDESourceControlProjectVersion</key>
+	<integer>111</integer>
+	<key>IDESourceControlProjectWCCIdentifier</key>
+	<string>363200109B4FCFBD3A4BB8D44CEDA009E73D1E26</string>
+	<key>IDESourceControlProjectWCConfigurations</key>
+	<array>
+		<dict>
+			<key>IDESourceControlRepositoryExtensionIdentifierKey</key>
+			<string>public.vcs.git</string>
+			<key>IDESourceControlWCCIdentifierKey</key>
+			<string>363200109B4FCFBD3A4BB8D44CEDA009E73D1E26</string>
+			<key>IDESourceControlWCCName</key>
+			<string>DaliyTask</string>
+		</dict>
+	</array>
+</dict>
+</plist>

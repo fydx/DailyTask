@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		113E709B4A9A22F3D8D46B7D /* libPods.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 75B639789799C0D212BA18E4 /* libPods.a */; };
 		DA95C2891A36A349003B1773 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = DA95C2881A36A349003B1773 /* main.m */; };
 		DA95C28C1A36A349003B1773 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = DA95C28B1A36A349003B1773 /* AppDelegate.m */; };
 		DA95C28F1A36A349003B1773 /* DaliyTask.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = DA95C28D1A36A349003B1773 /* DaliyTask.xcdatamodeld */; };
@@ -15,6 +16,9 @@
 		DA95C2971A36A349003B1773 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = DA95C2961A36A349003B1773 /* Images.xcassets */; };
 		DA95C29A1A36A349003B1773 /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = DA95C2981A36A349003B1773 /* LaunchScreen.xib */; };
 		DA95C2A61A36A349003B1773 /* DaliyTaskTests.m in Sources */ = {isa = PBXBuildFile; fileRef = DA95C2A51A36A349003B1773 /* DaliyTaskTests.m */; };
+		DA95C2B91A36D2A7003B1773 /* MainTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = DA95C2B81A36D2A7003B1773 /* MainTableViewController.m */; };
+		DA95C2BE1A36F0FC003B1773 /* MainTaskTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = DA95C2BD1A36F0FC003B1773 /* MainTaskTableViewCell.m */; };
+		DA95C2C11A37206D003B1773 /* Task.m in Sources */ = {isa = PBXBuildFile; fileRef = DA95C2C01A37206D003B1773 /* Task.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -28,6 +32,8 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		75B639789799C0D212BA18E4 /* libPods.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libPods.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		D2AB472CA331FA0DCA6CA535 /* Pods.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.release.xcconfig; path = "Pods/Target Support Files/Pods/Pods.release.xcconfig"; sourceTree = "<group>"; };
 		DA95C2831A36A348003B1773 /* DaliyTask.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = DaliyTask.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		DA95C2871A36A348003B1773 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		DA95C2881A36A349003B1773 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
@@ -42,6 +48,14 @@
 		DA95C29F1A36A349003B1773 /* DaliyTaskTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = DaliyTaskTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		DA95C2A41A36A349003B1773 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		DA95C2A51A36A349003B1773 /* DaliyTaskTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = DaliyTaskTests.m; sourceTree = "<group>"; };
+		DA95C2B71A36D2A7003B1773 /* MainTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MainTableViewController.h; path = MainPage/MainTableViewController.h; sourceTree = "<group>"; };
+		DA95C2B81A36D2A7003B1773 /* MainTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MainTableViewController.m; path = MainPage/MainTableViewController.m; sourceTree = "<group>"; };
+		DA95C2BA1A36DCBE003B1773 /* AppUtility.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = AppUtility.h; path = Utility/AppUtility.h; sourceTree = "<group>"; };
+		DA95C2BC1A36F0FC003B1773 /* MainTaskTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MainTaskTableViewCell.h; sourceTree = "<group>"; };
+		DA95C2BD1A36F0FC003B1773 /* MainTaskTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MainTaskTableViewCell.m; sourceTree = "<group>"; };
+		DA95C2BF1A37206D003B1773 /* Task.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Task.h; path = Model/Task.h; sourceTree = "<group>"; };
+		DA95C2C01A37206D003B1773 /* Task.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = Task.m; path = Model/Task.m; sourceTree = "<group>"; };
+		F9197A014C1E15CB794749B8 /* Pods.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.debug.xcconfig; path = "Pods/Target Support Files/Pods/Pods.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -49,6 +63,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				113E709B4A9A22F3D8D46B7D /* libPods.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -62,12 +77,31 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		16D689EDC83C0E8F1C15B5E5 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				75B639789799C0D212BA18E4 /* libPods.a */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		D10ACE92627E2890757FD40D /* Pods */ = {
+			isa = PBXGroup;
+			children = (
+				F9197A014C1E15CB794749B8 /* Pods.debug.xcconfig */,
+				D2AB472CA331FA0DCA6CA535 /* Pods.release.xcconfig */,
+			);
+			name = Pods;
+			sourceTree = "<group>";
+		};
 		DA95C27A1A36A348003B1773 = {
 			isa = PBXGroup;
 			children = (
 				DA95C2851A36A348003B1773 /* DaliyTask */,
 				DA95C2A21A36A349003B1773 /* DaliyTaskTests */,
 				DA95C2841A36A348003B1773 /* Products */,
+				D10ACE92627E2890757FD40D /* Pods */,
+				16D689EDC83C0E8F1C15B5E5 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -92,6 +126,9 @@
 				DA95C2981A36A349003B1773 /* LaunchScreen.xib */,
 				DA95C28D1A36A349003B1773 /* DaliyTask.xcdatamodeld */,
 				DA95C2861A36A348003B1773 /* Supporting Files */,
+				DA95C2B21A36A402003B1773 /* Model */,
+				DA95C2B61A36D1D1003B1773 /* MainPage */,
+				DA95C2BB1A36DCC2003B1773 /* Utility */,
 			);
 			path = DaliyTask;
 			sourceTree = "<group>";
@@ -122,6 +159,34 @@
 			name = "Supporting Files";
 			sourceTree = "<group>";
 		};
+		DA95C2B21A36A402003B1773 /* Model */ = {
+			isa = PBXGroup;
+			children = (
+				DA95C2BF1A37206D003B1773 /* Task.h */,
+				DA95C2C01A37206D003B1773 /* Task.m */,
+			);
+			name = Model;
+			sourceTree = "<group>";
+		};
+		DA95C2B61A36D1D1003B1773 /* MainPage */ = {
+			isa = PBXGroup;
+			children = (
+				DA95C2B71A36D2A7003B1773 /* MainTableViewController.h */,
+				DA95C2B81A36D2A7003B1773 /* MainTableViewController.m */,
+				DA95C2BC1A36F0FC003B1773 /* MainTaskTableViewCell.h */,
+				DA95C2BD1A36F0FC003B1773 /* MainTaskTableViewCell.m */,
+			);
+			name = MainPage;
+			sourceTree = "<group>";
+		};
+		DA95C2BB1A36DCC2003B1773 /* Utility */ = {
+			isa = PBXGroup;
+			children = (
+				DA95C2BA1A36DCBE003B1773 /* AppUtility.h */,
+			);
+			name = Utility;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -129,9 +194,11 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = DA95C2A91A36A349003B1773 /* Build configuration list for PBXNativeTarget "DaliyTask" */;
 			buildPhases = (
+				377A04EF1A852CEE87A1F76F /* Check Pods Manifest.lock */,
 				DA95C27F1A36A348003B1773 /* Sources */,
 				DA95C2801A36A348003B1773 /* Frameworks */,
 				DA95C2811A36A348003B1773 /* Resources */,
+				1E49779B897B6C4011A9A55D /* Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -217,12 +284,48 @@
 		};
 /* End PBXResourcesBuildPhase section */
 
+/* Begin PBXShellScriptBuildPhase section */
+		1E49779B897B6C4011A9A55D /* Copy Pods Resources */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "Copy Pods Resources";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods/Pods-resources.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		377A04EF1A852CEE87A1F76F /* Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "Check Pods Manifest.lock";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [[ $? != 0 ]] ; then\n    cat << EOM\nerror: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\nEOM\n    exit 1\nfi\n";
+			showEnvVarsInLog = 0;
+		};
+/* End PBXShellScriptBuildPhase section */
+
 /* Begin PBXSourcesBuildPhase section */
 		DA95C27F1A36A348003B1773 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				DA95C2C11A37206D003B1773 /* Task.m in Sources */,
 				DA95C28C1A36A349003B1773 /* AppDelegate.m in Sources */,
+				DA95C2B91A36D2A7003B1773 /* MainTableViewController.m in Sources */,
+				DA95C2BE1A36F0FC003B1773 /* MainTaskTableViewCell.m in Sources */,
 				DA95C28F1A36A349003B1773 /* DaliyTask.xcdatamodeld in Sources */,
 				DA95C2921A36A349003B1773 /* ViewController.m in Sources */,
 				DA95C2891A36A349003B1773 /* main.m in Sources */,
@@ -345,6 +448,7 @@
 		};
 		DA95C2AA1A36A349003B1773 /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = F9197A014C1E15CB794749B8 /* Pods.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				INFOPLIST_FILE = DaliyTask/Info.plist;
@@ -355,6 +459,7 @@
 		};
 		DA95C2AB1A36A349003B1773 /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = D2AB472CA331FA0DCA6CA535 /* Pods.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				INFOPLIST_FILE = DaliyTask/Info.plist;
@@ -416,6 +521,7 @@
 				DA95C2AB1A36A349003B1773 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		DA95C2AC1A36A349003B1773 /* Build configuration list for PBXNativeTarget "DaliyTaskTests" */ = {
 			isa = XCConfigurationList;
@@ -424,6 +530,7 @@
 				DA95C2AE1A36A349003B1773 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 
