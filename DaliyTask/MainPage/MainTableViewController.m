@@ -11,8 +11,11 @@
 #import "AppDelegate.h"
 #import "Task.h"
 #import "MainTaskTableViewCell.h"
+#import "AddViewController.h"
+
 @interface MainTableViewController ()
 @property (strong, nonatomic) NSMutableArray *tasks;
+@property (strong, nonatomic) NSMutableDictionary *statusDict;
 @end
 
 @implementation MainTableViewController
@@ -20,8 +23,10 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     [self setNavigationBar];
-    [self getTask];
+    [self loadTask];
     //[self.view addSubview:_tableView];
+    _statusDict = [NSMutableDictionary dictionaryWithCapacity:10];
+   // NSLog(@"bound x:%lf,y:%lf",self.view.bounds.origin.x,self.view.bounds.origin.y);
     _tableView = [[UITableView alloc]initWithFrame:self.view.bounds];
     _tableView.delegate = self;
     _tableView.dataSource = self;
@@ -44,16 +49,26 @@
 {
     // 设置导航栏为蓝色，statusbar，title为白色
     [self.navigationController.navigationBar setBarTintColor:UIColorFromRGB(BLUE)];
-    self.navigationController.navigationBar.topItem.title = @"日常";
+    self.title = @"日常";
+    self.navigationController.navigationBar.tintColor = [UIColor whiteColor];
     [[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleLightContent];
     self.navigationController.navigationBar.titleTextAttributes = @{NSForegroundColorAttributeName: UIColorFromRGB(0xffffff)};
-    UIBarButtonItem *shareItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAction target:self action:@selector(buttonAddPress:)];
-    NSArray *actionButtonItems = @[shareItem];
+    UIBarButtonItem *shareItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAdd target:self action:@selector(buttonAddPress:)];
+    UIBarButtonItem *deleteItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemTrash target:self action:@selector(sampleAnim)];
+    UIBarButtonItem *addItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemBookmarks target:self action:@selector(startAddViewController)];
+    NSArray *actionButtonItems = @[shareItem,deleteItem];
     self.navigationItem.rightBarButtonItems = actionButtonItems;
+    self.navigationItem.leftBarButtonItem = addItem;
 
 
 }
--(void)getTask
+- (void)startAddViewController
+{
+    AddViewController *addViewController = [[AddViewController alloc] init];
+    [self.navigationController pushViewController:addViewController animated:YES];
+}
+
+- (void)loadTask
 {
     AppDelegate *appDelegate = [UIApplication sharedApplication].delegate;
     NSManagedObjectContext *managedContext = appDelegate.managedObjectContext;
@@ -80,22 +95,65 @@
     NSManagedObjectContext *managedContext  = [appDelegate managedObjectContext];
     if (managedContext != nil) {
         Task *fakeTask = [NSEntityDescription insertNewObjectForEntityForName:@"Task" inManagedObjectContext:managedContext];
-        fakeTask.taskId = @1;
-        fakeTask.name = @"锻炼";
+        fakeTask.taskId = @(_tasks.count + 1);
+        fakeTask.name = @"锻炼123123123";
         fakeTask.isFixed = @YES;
-        fakeTask.activeDay = @"0001110";
+
         fakeTask.finishDay = @"0001100";
         fakeTask.times = @0;
         fakeTask.finishTimes = @0;
         fakeTask.createDate = [NSDate date];
+        NSString *dateString = [NSDateFormatter localizedStringFromDate:[NSDate date]
+                                                              dateStyle:NSDateFormatterShortStyle
+                                                              timeStyle:NSDateFormatterFullStyle];
+        fakeTask.activeDay = dateString;
         [appDelegate saveContext];
        // NSLog(@"Add finish");
     }
 
 }
+
+- (void)deleteTask
+{
+   AppDelegate *appDelegate = [UIApplication sharedApplication].delegate;
+    [appDelegate.managedObjectContext deleteObject:_tasks[0]];
+    [appDelegate saveContext];
+    [self loadTask];
+   // [_tasks removeObjectAtIndex:0];
+    [self.tableView reloadData];
+}
 // 点击事件
 - (IBAction)buttonAddPress:(id)sender {
     [self addFakeTask];
+    [UIView transitionWithView:_tableView
+                duration:0.5f
+                options:UIViewAnimationOptionTransitionCrossDissolve
+                animations:^{
+                    [self loadTask];
+                   // [_tasks addObject:_tasks[1]];
+                    [_tableView reloadData];
+                } completion:^(BOOL finished) {
+
+            }];
+}
+- (void)sampleAnim
+{
+    [UIView transitionWithView:_tableView
+                      duration:0.5f
+                       options:UIViewAnimationOptionTransitionCrossDissolve
+                    animations:^{
+                       [self deleteTask];
+                    } completion:^(BOOL finished) {
+                        [self buttonAddPress:nil];
+            }];
+}
+- (void)deleteTaskWithAnim
+{
+    AppDelegate *appDelegate = [UIApplication sharedApplication].delegate;
+    [appDelegate.managedObjectContext deleteObject:_tasks[2]];
+    [appDelegate saveContext];
+    [self loadTask];
+    [self.tableView reloadData];
 }
 #pragma mark - Table view data source
 
@@ -122,18 +180,38 @@
     MainTaskTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier forIndexPath:indexPath];
     if(cell == nil)
     {
-        cell = [[MainTaskTableViewCell alloc] initWithTaskAndStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier task:_tasks[(NSUInteger) indexPath.row]];
+        cell = [[MainTaskTableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier task:_tasks[(NSUInteger) indexPath.row]];
     }
     else
     {
-        [cell setView:_tasks[(NSUInteger) indexPath.row]];
+        Task *cellTask = _tasks[(NSUInteger) indexPath.row];
+        [cell setView:cellTask];
+        if([(NSNumber *) _statusDict[@([cellTask.taskId integerValue])] boolValue])
+        {
+            cell.taskFinishButton.selected = YES;
+            NSLog(@"rowId : %d, isClicked : %d",[cellTask.taskId integerValue],[(NSNumber *) _statusDict[@(indexPath.row)] boolValue]);
+        }
+        else
+        {
+            cell.taskFinishButton.selected = NO;
+        }
+
+       // int rownumber =  indexPath.row;
+        [cell.taskFinishButton setTag:[cellTask.taskId integerValue]];
+        [cell.taskFinishButton addTarget:self action:@selector(cellButtonPressed:) forControlEvents:UIControlEventTouchUpInside];
+        //[cell reloadFinishStatus];
     }
     // Configure the cell...
     
     return cell;
 }
 
+- (void)cellButtonPressed:(UIButton *)sender
+{
+     sender.selected = !sender.selected;
+    _statusDict[@(sender.tag)] = @(sender.selected);
 
+}
 /*
 // Override to support conditional editing of the table view.
 - (BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath {

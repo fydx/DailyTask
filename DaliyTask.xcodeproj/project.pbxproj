@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		113E709B4A9A22F3D8D46B7D /* libPods.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 75B639789799C0D212BA18E4 /* libPods.a */; };
+		DA4E36971A415CA9007157FC /* AddViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = DA4E36961A415CA9007157FC /* AddViewController.m */; };
 		DA95C2891A36A349003B1773 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = DA95C2881A36A349003B1773 /* main.m */; };
 		DA95C28C1A36A349003B1773 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = DA95C28B1A36A349003B1773 /* AppDelegate.m */; };
 		DA95C28F1A36A349003B1773 /* DaliyTask.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = DA95C28D1A36A349003B1773 /* DaliyTask.xcdatamodeld */; };
@@ -34,6 +35,8 @@
 /* Begin PBXFileReference section */
 		75B639789799C0D212BA18E4 /* libPods.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libPods.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		D2AB472CA331FA0DCA6CA535 /* Pods.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.release.xcconfig; path = "Pods/Target Support Files/Pods/Pods.release.xcconfig"; sourceTree = "<group>"; };
+		DA4E36951A415CA9007157FC /* AddViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AddViewController.h; path = AddPage/AddViewController.h; sourceTree = "<group>"; };
+		DA4E36961A415CA9007157FC /* AddViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = AddViewController.m; path = AddPage/AddViewController.m; sourceTree = "<group>"; };
 		DA95C2831A36A348003B1773 /* DaliyTask.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = DaliyTask.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		DA95C2871A36A348003B1773 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		DA95C2881A36A349003B1773 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
@@ -94,6 +97,15 @@
 			name = Pods;
 			sourceTree = "<group>";
 		};
+		DA4E36941A415C7B007157FC /* AddPage */ = {
+			isa = PBXGroup;
+			children = (
+				DA4E36951A415CA9007157FC /* AddViewController.h */,
+				DA4E36961A415CA9007157FC /* AddViewController.m */,
+			);
+			name = AddPage;
+			sourceTree = "<group>";
+		};
 		DA95C27A1A36A348003B1773 = {
 			isa = PBXGroup;
 			children = (
@@ -117,6 +129,7 @@
 		DA95C2851A36A348003B1773 /* DaliyTask */ = {
 			isa = PBXGroup;
 			children = (
+				DA4E36941A415C7B007157FC /* AddPage */,
 				DA95C28A1A36A349003B1773 /* AppDelegate.h */,
 				DA95C28B1A36A349003B1773 /* AppDelegate.m */,
 				DA95C2901A36A349003B1773 /* ViewController.h */,
@@ -328,6 +341,7 @@
 				DA95C2BE1A36F0FC003B1773 /* MainTaskTableViewCell.m in Sources */,
 				DA95C28F1A36A349003B1773 /* DaliyTask.xcdatamodeld in Sources */,
 				DA95C2921A36A349003B1773 /* ViewController.m in Sources */,
+				DA4E36971A415CA9007157FC /* AddViewController.m in Sources */,
 				DA95C2891A36A349003B1773 /* main.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

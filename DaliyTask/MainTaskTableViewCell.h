@@ -9,7 +9,8 @@
 #import <UIKit/UIKit.h>
 #import "Task.h"
 @interface MainTaskTableViewCell : UITableViewCell
-
-- (instancetype)initWithTaskAndStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier task:(Task *)task;
+@property (strong, nonatomic) UIButton *taskFinishButton;
+- (instancetype)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier task:(Task *)task;
 - (void)setView:(Task *)task;
+
 @end

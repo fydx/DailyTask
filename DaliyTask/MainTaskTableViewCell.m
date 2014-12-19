@@ -14,8 +14,9 @@
 @property (strong, nonatomic) UIImageView *leftMark;
 @property (strong, nonatomic) UILabel *taskName;
 @property (strong, nonatomic) UILabel *taskActiveDay;
-@property (strong, nonatomic) UIButton *taskFinishButton;
 @property (strong, nonatomic) UIImageView *divider;
+
+//@property (nonatomic) BOOL isFinished;
 //@property (strong, nonatomic) Task *task;
 @end
 
@@ -31,7 +32,7 @@
 
     // Configure the view for the selected state
 }
-- (instancetype)initWithTaskAndStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier task:(Task *)task
+- (instancetype)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier task:(Task *)task
 {
    if (self = [super initWithStyle:style reuseIdentifier:reuseIdentifier])
    {
@@ -42,9 +43,13 @@
 
 - (void)setView:(Task *)task
 {
-    [self createView];
-    [self setMASLayout];
-    [self setViewStyle];
+   if (_taskName == nil)
+   {
+       [self createView];
+       [self setMASLayout];
+       [self setViewStyle];
+   }
+
     [self bindData:task];
 
 }
@@ -73,15 +78,18 @@
     [_divider setBackgroundColor:UIColorFromRGB(0x999999)];
     [_taskFinishButton setImage:[UIImage imageNamed:@"mainpage_checkbox_unselected"] forState:UIControlStateNormal];
     [_taskFinishButton setImage:[UIImage imageNamed:@"mainpage_checkbox_selected"] forState:UIControlStateSelected];
-    [_taskFinishButton addTarget:self action:@selector(finishButtonPressed) forControlEvents:UIControlEventTouchDown];
+    //[_taskFinishButton addTarget:self action:@selector(finishButtonPressed) forControlEvents:UIControlEventTouchDown];
 
 }
 - (void)finishButtonPressed
 {
    // [_taskFinishButton setstate
-    NSLog(@"Button pressed");
+    //NSLog(@"Button pressed");
     _taskFinishButton.selected = !_taskFinishButton.selected;
+   // _isFinished = _taskFinishButton.selected;
+
 }
+
 - (void)setMASLayout
 {
 
