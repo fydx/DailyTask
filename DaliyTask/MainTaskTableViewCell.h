@@ -12,5 +12,6 @@
 @property (strong, nonatomic) UIButton *taskFinishButton;
 - (instancetype)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier task:(Task *)task;
 - (void)setView:(Task *)task;
-
+- (void)changeViewToManageStatus;
+- (void)changeViewToNormalStatus;
 @end

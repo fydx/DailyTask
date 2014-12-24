@@ -15,6 +15,8 @@
 @property (strong, nonatomic) UILabel *taskName;
 @property (strong, nonatomic) UILabel *taskActiveDay;
 @property (strong, nonatomic) UIImageView *divider;
+@property (strong, nonatomic) UIButton *deleteButton;
+@property (strong, nonatomic) UIButton *editButton;
 
 //@property (nonatomic) BOOL isFinished;
 //@property (strong, nonatomic) Task *task;
@@ -52,6 +54,7 @@
 
     [self bindData:task];
 
+
 }
 - (void)createView
 {
@@ -60,11 +63,15 @@
     _taskFinishButton = [[UIButton alloc] init];
     _leftMark = [[UIImageView alloc] init];
     _divider = [[UIImageView alloc] init];
+    _deleteButton = [[UIButton alloc] init];
+    _editButton = [[UIButton alloc]init];
     [self.contentView addSubview:_taskName];
     [self.contentView addSubview:_taskActiveDay];
     [self.contentView addSubview:_taskFinishButton];
     [self.contentView addSubview:_leftMark];
     [self.contentView addSubview:_divider];
+    [self.contentView addSubview:_deleteButton];
+    [self.contentView addSubview:_editButton];
 }
 
 - (void)setViewStyle
@@ -78,6 +85,12 @@
     [_divider setBackgroundColor:UIColorFromRGB(0x999999)];
     [_taskFinishButton setImage:[UIImage imageNamed:@"mainpage_checkbox_unselected"] forState:UIControlStateNormal];
     [_taskFinishButton setImage:[UIImage imageNamed:@"mainpage_checkbox_selected"] forState:UIControlStateSelected];
+    _deleteButton.hidden =YES;
+    _editButton.hidden = YES;
+    [_deleteButton setImage:[UIImage imageNamed:@"mainpage_button_delete"] forState:UIControlStateNormal];
+    [_editButton setImage:[UIImage imageNamed:@"mainpage_button_edit"] forState:UIControlStateNormal];
+
+
     //[_taskFinishButton addTarget:self action:@selector(finishButtonPressed) forControlEvents:UIControlEventTouchDown];
 
 }
@@ -125,12 +138,49 @@
       make.right.equalTo(self.contentView).offset(-LEFTPADDING);
       make.height.equalTo(@0.4);
    }];
+    [_editButton mas_makeConstraints:^(MASConstraintMaker *maker)
+    {
+        maker.edges.equalTo(_taskFinishButton);
+    }];
+    [_deleteButton mas_makeConstraints:^(MASConstraintMaker *maker)
+    {
+       maker.right.equalTo(_editButton.mas_left).offset(-10);
+        maker.bottom.equalTo(_editButton);
+    }];
 
 }
 
 - (void)bindData: (Task *)task
 {
     _taskName.text =  task.name;
-    _taskActiveDay.text = task.activeDay;
+    _taskActiveDay.text = [self convertActiveDaysLabelString:task.activeDay];
+
+}
+- (NSString *)convertActiveDaysLabelString: (NSString *)taskActiveDayString
+{
+    NSMutableString *activeDaysLabelString = [[NSMutableString alloc] initWithCapacity:8];
+    NSArray *daysArray = @[@"周日", @"周一", @"周二", @"周三", @"周四", @"周五", @"周六"];
+    for (int i = 0 ;i < taskActiveDayString.length ; i++)
+    {
+       if ([taskActiveDayString characterAtIndex:(NSUInteger) i] == '1') {
+           [activeDaysLabelString appendString:daysArray[(NSUInteger) i]];
+           [activeDaysLabelString appendString:@"  "];
+       }
+
+    }
+    return [activeDaysLabelString copy];
+}
+
+- (void)changeViewToManageStatus {
+    _editButton.hidden = NO;
+    _deleteButton.hidden = NO;
+    _taskFinishButton.hidden = YES;
+}
+
+- (void)changeViewToNormalStatus
+{
+    _editButton.hidden = YES;
+    _deleteButton.hidden = YES;
+    _taskFinishButton.hidden = NO;
 }
 @end
