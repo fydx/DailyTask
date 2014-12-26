@@ -20,6 +20,7 @@
 
 @implementation MainTableViewController
 
+//初始化方法
 - (void)viewDidLoad {
     [super viewDidLoad];
     [self setNavigationBar];
@@ -33,6 +34,7 @@
     _tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
     [self.tableView registerClass:[MainTaskTableViewCell class] forCellReuseIdentifier:@"MainTaskCell"];
    [self.view addSubview:_tableView];
+
     //[_tableView setEditing:YES animated:YES];
    // NSLog(@"count :%@", [_tasks objectAtIndex:@1]);
     // Uncomment the following line to preserve selection between presentations.
@@ -59,12 +61,12 @@
     self.navigationController.navigationBar.tintColor = [UIColor whiteColor];
     [[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleLightContent];
     self.navigationController.navigationBar.titleTextAttributes = @{NSForegroundColorAttributeName: UIColorFromRGB(0xffffff)};
-    UIBarButtonItem *shareItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAdd target:self action:@selector(startAddViewController)];
+    UIBarButtonItem *addItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAdd target:self action:@selector(startAddViewController)];
     UIBarButtonItem *deleteItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemTrash target:self action:@selector(sampleAnim)];
-    UIBarButtonItem *addItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemBookmarks target:self action:@selector(startAddViewController)];
-    NSArray *actionButtonItems = @[shareItem,deleteItem];
+    UIBarButtonItem *shareItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemBookmarks target:self action:@selector(changeEditingMode)];
+    NSArray *actionButtonItems = @[addItem,deleteItem];
     self.navigationItem.rightBarButtonItems = actionButtonItems;
-    self.navigationItem.leftBarButtonItem = addItem;
+    self.navigationItem.leftBarButtonItem = shareItem;
 
 
 }
@@ -83,7 +85,26 @@
 
     [self.navigationController pushViewController:addViewController animated:YES];
 }
+- (void)startEditTaskViewController: (UIButton *)button
+{
+    NSInteger taskRow = button.tag;
+    AddViewController *addViewController = [[AddViewController alloc] init];
+    //[addViewController bindData:_tasks[(NSUInteger) taskRow]];
+   // addViewController.existTask = _tasks[(NSUInteger) taskRow];
+    Task *editTask  =  _tasks[(NSUInteger) taskRow];
+    addViewController.taskId = [editTask.taskId integerValue];
+    [self.navigationController pushViewController:addViewController animated:YES];
+}
+- (void) changeEditingMode
+{
+    [_tableView setEditing:!_tableView.editing animated:YES];
+    if (_tableView.editing == NO) {
+        
+       [_tableView reloadSections:[NSIndexSet indexSetWithIndex:0] withRowAnimation:UITableViewRowAnimationFade];
+    }
 
+}
+// 从数据库中读取任务数据
 - (void)loadTask
 {
     AppDelegate *appDelegate = [UIApplication sharedApplication].delegate;
@@ -98,7 +119,7 @@
     NSError *error;
     //接收查询出来的数据
     NSArray *arr = [managedContext executeFetchRequest:request error:&error];
-    self.tasks = [arr mutableCopy];
+    self.tasks = [arr mutableCopy] ;
     //NSLog(@"number %d", self.tasks.count);
    // Task *task =   [_tasks objectAtIndex:1];
    // NSLog(@"day :%@",task.activeDay);
@@ -124,6 +145,7 @@
                                                               timeStyle:NSDateFormatterFullStyle];
         fakeTask.activeDay = dateString;
         [appDelegate saveContext];
+        
        // NSLog(@"Add finish");
     }
 
@@ -213,6 +235,9 @@
        // int rownumber =  indexPath.row;
         [cell.taskFinishButton setTag:[cellTask.taskId integerValue]];
         [cell.taskFinishButton addTarget:self action:@selector(cellButtonPressed:) forControlEvents:UIControlEventTouchUpInside];
+        [cell changeViewToNormalStatus];
+        cell.editButton.tag = indexPath.row;
+        [cell.editButton addTarget:self action:@selector(startEditTaskViewController:) forControlEvents:UIControlEventTouchUpInside];
         //[cell reloadFinishStatus];
     }
     // Configure the cell...
@@ -232,17 +257,34 @@
     // Return NO if you do not want the specified item to be editable.
     return YES;
 }
+// 设定删除style
+- (UITableViewCellEditingStyle)tableView:(UITableView *)tableView editingStyleForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+   //static  NSString *CellIdentifier = @"MainTaskCell";
+    if (_tableView.editing)
+    {
+        MainTaskTableViewCell *cell = (MainTaskTableViewCell *) [_tableView cellForRowAtIndexPath:indexPath];
+        [cell changeViewToManageStatus];
+        return UITableViewCellEditingStyleDelete;
+    }
+    else
+    {
+        return    UITableViewCellEditingStyleNone;
+    }
 
+}
 
-
-// Override to support editing the table view.
+//Override to support editing the table view.
 - (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath {
     if (editingStyle == UITableViewCellEditingStyleDelete) {
         // Delete the row from the data source
-        [tableView deleteRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationFade];
+        //[tableView deleteRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationFade];
+        [self deleteTask:_tasks[(NSUInteger) indexPath.row]];
+        [_tasks removeObjectAtIndex:(NSUInteger) indexPath.row];
+        [_tableView reloadSections:[NSIndexSet indexSetWithIndex:0] withRowAnimation:UITableViewRowAnimationFade];
     } else if (editingStyle == UITableViewCellEditingStyleInsert) {
         // Create a new instance of the appropriate class, insert it into the array, and add a new row to the table view
-    }   
+    }
 }
 
 
@@ -259,7 +301,28 @@
     return YES;
 }
 
+//删除
+- (void)deleteTask: (Task *)task
+{  NSFetchRequest *fetchRequest = [[NSFetchRequest alloc] init];
+    AppDelegate *appDelegate = [UIApplication sharedApplication].delegate;
+    NSManagedObjectContext *managedContext = [appDelegate managedObjectContext];
+    [fetchRequest setEntity:[NSEntityDescription entityForName:@"Task" inManagedObjectContext:managedContext]];
+   // NSLog(@"taskId : %d",task.taskId);
+    [fetchRequest setPredicate:[NSPredicate predicateWithFormat:@"taskId==%d", [task.taskId integerValue]]];
 
+    NSError* error = nil;
+    NSArray* results = [managedContext executeFetchRequest:fetchRequest error:&error];
+
+    if (results.count > 0) {
+        [managedContext deleteObject:results[0]];
+        //NSLog(@"delete success!");
+    }
+    else
+    {
+        //NSLog(@"delete failed!");
+    }
+
+}
 /*
 #pragma mark - Navigation
 

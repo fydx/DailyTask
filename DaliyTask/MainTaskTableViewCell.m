@@ -16,7 +16,7 @@
 @property (strong, nonatomic) UILabel *taskActiveDay;
 @property (strong, nonatomic) UIImageView *divider;
 @property (strong, nonatomic) UIButton *deleteButton;
-@property (strong, nonatomic) UIButton *editButton;
+
 
 //@property (nonatomic) BOOL isFinished;
 //@property (strong, nonatomic) Task *task;
@@ -173,8 +173,9 @@
 
 - (void)changeViewToManageStatus {
     _editButton.hidden = NO;
-    _deleteButton.hidden = NO;
+    _deleteButton.hidden = YES;
     _taskFinishButton.hidden = YES;
+    _leftMark.hidden = YES;
 }
 
 - (void)changeViewToNormalStatus
@@ -182,5 +183,6 @@
     _editButton.hidden = YES;
     _deleteButton.hidden = YES;
     _taskFinishButton.hidden = NO;
+    _leftMark.hidden = NO;
 }
 @end

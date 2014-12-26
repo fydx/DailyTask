@@ -10,6 +10,7 @@
 #import "Task.h"
 @interface MainTaskTableViewCell : UITableViewCell
 @property (strong, nonatomic) UIButton *taskFinishButton;
+@property (strong, nonatomic) UIButton *editButton;
 - (instancetype)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier task:(Task *)task;
 - (void)setView:(Task *)task;
 - (void)changeViewToManageStatus;

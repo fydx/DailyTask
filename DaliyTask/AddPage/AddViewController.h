@@ -8,6 +8,9 @@
 
 #import <UIKit/UIKit.h>
 
+@class Task;
+
 @interface AddViewController : UIViewController
 @property (strong,nonatomic) NSNumber *nextTaskId;
+@property NSInteger taskId;
 @end

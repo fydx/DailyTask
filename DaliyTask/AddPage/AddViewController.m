@@ -27,6 +27,8 @@
 @property (strong, nonatomic) UIButton *confirmButton;
 @property (strong, nonatomic) UIView *titleTextView;
 @property (strong, nonatomic) NSArray *daysArray;
+@property (strong, nonatomic) Task *existTask;
+
 @end
 
 @implementation AddViewController
@@ -39,6 +41,16 @@
     [self setViewStyle];
     [self setMASLayout];
     _fixedButton.selected = YES;
+   // NSLog(@"taskid %d",_taskId);
+    if (_taskId != 0)
+    {
+        [self loadEditTask];
+        if (_existTask != nil)
+        {
+            [self bindData:_existTask];
+        }
+    }
+
 //    CGRect rect = CGRectMake(100.0, 100.0, 100.0, 100.0);
 //    UILabel *label = [[UILabel alloc] initWithFrame:rect];
 //    label.text = @"123";
@@ -51,6 +63,8 @@
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.
 }
+
+
 - (void)setNavigationBar
 {
     self.edgesForExtendedLayout = UIRectEdgeNone;
@@ -80,6 +94,27 @@
     // Pass the selected object to the new view controller.
 }
 */
+- (void)bindData: (Task *)task
+{
+
+    _titleTextField.text = task.name;
+        if (task.isFixed)
+        {
+            _fixedButton.selected = YES;
+            _flexButton.selected = NO;
+            for (int i = 0 ; i < 7; i++)
+            {
+                UIButton *button = (UIButton *)_selectDaysButtonArray[(NSUInteger) i];
+                button.selected = [task.activeDay characterAtIndex:(NSUInteger)i] == '1';
+            }
+        }
+        else
+        {
+            _fixedButton.selected = NO;
+            _flexButton.selected = YES;
+    }
+
+}
 - (void)createView
 {
     _titleTextField = [[UITextField alloc] init];
@@ -227,14 +262,62 @@
     
     if (_titleTextField.text.length > 0)
     {
-        [self saveTask];
+        if (_existTask != nil)
+        {
+             [self saveEditTask];
+        }
+        else
+        {
+            [self saveTask];
+
+        }
         [self.navigationController popViewControllerAnimated:YES];
+
     }
     else
     {
 
     }
      
+}
+
+- (void)loadEditTask
+{
+    NSFetchRequest *fetchRequest = [[NSFetchRequest alloc] init];
+    AppDelegate *appDelegate = [UIApplication sharedApplication].delegate;
+    NSManagedObjectContext *managedContext = [appDelegate managedObjectContext];
+    [fetchRequest setEntity:[NSEntityDescription entityForName:@"Task" inManagedObjectContext:managedContext]];
+    [fetchRequest setPredicate:[NSPredicate predicateWithFormat:@"taskId==%d", _taskId]];
+    NSError* error = nil;
+    NSArray* results = [managedContext executeFetchRequest:fetchRequest error:&error];
+    if (results.count > 0) {
+         //NSLog(@"get edit data!!!!");
+        _existTask = results[0];
+    }
+
+}
+- (void)saveEditTask
+{
+    AppDelegate *appDelegate = [UIApplication sharedApplication].delegate;
+    NSMutableString *selectDaysStatusString = [[NSMutableString alloc] initWithCapacity:7];
+    _existTask.name = _titleTextField.text;
+    if (_fixedButton.selected) {
+        _existTask.isFixed = @YES;
+        for (int i = 0; i < _selectDaysButtonArray.count; i++) {
+            UIButton *selectDayButton = _selectDaysButtonArray[i];
+            if (selectDayButton.selected) {
+                [selectDaysStatusString appendString:@"1"];
+            }
+            else {
+                [selectDaysStatusString appendString:@"0"];
+            }
+        }
+        _existTask.activeDay = selectDaysStatusString;
+    }
+    else {
+        _existTask.isFixed = @NO;
+    }
+    [appDelegate saveContext];
 }
 - (void)saveTask {
     AppDelegate *appDelegate = [UIApplication sharedApplication].delegate;
