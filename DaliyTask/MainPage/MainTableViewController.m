@@ -14,8 +14,10 @@
 #import "AddViewController.h"
 
 @interface MainTableViewController ()
-@property (strong, nonatomic) NSMutableArray *tasks;
-@property (strong, nonatomic) NSMutableDictionary *statusDict;
+@property (strong, nonatomic) NSMutableArray *tasks;    //任务，内存中的数据源
+@property (strong, nonatomic) NSMutableDictionary *statusDict;         //记录是否被勾选
+@property NSInteger weekday;
+@property  int maxId;
 @end
 
 @implementation MainTableViewController
@@ -24,8 +26,11 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     [self setNavigationBar];
-    [self loadTask];
+    //[self loadTask];
     //[self.view addSubview:_tableView];
+    NSDate *date = [NSDate date];
+    NSDateComponents *componets = [[NSCalendar autoupdatingCurrentCalendar] components:NSCalendarUnitWeekday fromDate:date];
+     _weekday =  [componets weekday];
     _statusDict = [NSMutableDictionary dictionaryWithCapacity:10];
    // NSLog(@"bound x:%lf,y:%lf",self.view.bounds.origin.x,self.view.bounds.origin.y);
     _tableView = [[UITableView alloc]initWithFrame:self.view.bounds];
@@ -47,12 +52,14 @@
 {
     [super viewWillAppear:animated];
     [self loadTask];
+    [self updateFinishStatus];
     [_tableView reloadData];
 }
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.
 }
+//设置导航栏
 - (void)setNavigationBar
 {
     // 设置导航栏为蓝色，statusbar，title为白色
@@ -62,29 +69,31 @@
     [[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleLightContent];
     self.navigationController.navigationBar.titleTextAttributes = @{NSForegroundColorAttributeName: UIColorFromRGB(0xffffff)};
     UIBarButtonItem *addItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAdd target:self action:@selector(startAddViewController)];
-    UIBarButtonItem *deleteItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemTrash target:self action:@selector(sampleAnim)];
+    //UIBarButtonItem *deleteItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemTrash target:self action:@selector(sampleAnim)];
     UIBarButtonItem *shareItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemBookmarks target:self action:@selector(changeEditingMode)];
-    NSArray *actionButtonItems = @[addItem,deleteItem];
+    NSArray *actionButtonItems = @[addItem];
     self.navigationItem.rightBarButtonItems = actionButtonItems;
     self.navigationItem.leftBarButtonItem = shareItem;
 
 
 }
+//开启新页面控制器
 - (void)startAddViewController
 {
     AddViewController *addViewController = [[AddViewController alloc] init];
     if (_tasks.count > 0)
     {
-        Task *lastTask = _tasks[_tasks.count-1];
-        addViewController.nextTaskId = @([lastTask.taskId integerValue] + 1);
+       // Task *lastTask = _tasks[0];
+        addViewController.nextTaskId = @(_maxId + 1);
     }
     else
     {
-        addViewController.nextTaskId = @0;
+        addViewController.nextTaskId = @1;
     }
-
+    NSLog(@"transfer id : %d", [addViewController.nextTaskId integerValue]);
     [self.navigationController pushViewController:addViewController animated:YES];
 }
+//开启修改页面控制器
 - (void)startEditTaskViewController: (UIButton *)button
 {
     NSInteger taskRow = button.tag;
@@ -95,6 +104,7 @@
     addViewController.taskId = [editTask.taskId integerValue];
     [self.navigationController pushViewController:addViewController animated:YES];
 }
+//进入/取消修改模式
 - (void) changeEditingMode
 {
     [_tableView setEditing:!_tableView.editing animated:YES];
@@ -119,12 +129,15 @@
     NSError *error;
     //接收查询出来的数据
     NSArray *arr = [managedContext executeFetchRequest:request error:&error];
-    self.tasks = [arr mutableCopy] ;
+    self.tasks = [self sortTasksWithRank:arr] ;
+  
     //NSLog(@"number %d", self.tasks.count);
    // Task *task =   [_tasks objectAtIndex:1];
    // NSLog(@"day :%@",task.activeDay);
 
 }
+
+//已弃用方法，添加一个预置的task
 - (void)addFakeTask
 {
     //通信中心，通过此单例找到appDeleage中的数据库
@@ -150,7 +163,7 @@
     }
 
 }
-
+//删除一个task，以弃用
 - (void)deleteTask
 {
    AppDelegate *appDelegate = [UIApplication sharedApplication].delegate;
@@ -209,7 +222,7 @@
 {
     return 75;
 }
-
+//tableview 核心方法
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     static NSString *CellIdentifier = @"MainTaskCell";
     //NSLog(@"go into here!");
@@ -222,7 +235,10 @@
     {
         Task *cellTask = _tasks[(NSUInteger) indexPath.row];
         [cell setView:cellTask];
-        if([(NSNumber *) _statusDict[@([cellTask.taskId integerValue])] boolValue])
+        NSLog(@"execute cellforrowatindex !!! id : %d ,transfer select status in cell: %d",[cellTask.taskId integerValue], [_statusDict[@([cellTask.taskId integerValue])] boolValue]) ;
+        NSLog(@"IN CELL location : %d,bool value : %d", indexPath.row,[(NSNumber *) _statusDict[@([cellTask.taskId integerValue])] boolValue]);
+
+        if([_statusDict[@(indexPath.row)] boolValue])
         {
             cell.taskFinishButton.selected = YES;
             NSLog(@"rowId : %ld, isClicked : %d",(long)[cellTask.taskId integerValue],[(NSNumber *) _statusDict[@(indexPath.row)] boolValue]);
@@ -233,8 +249,11 @@
         }
 
        // int rownumber =  indexPath.row;
-        [cell.taskFinishButton setTag:[cellTask.taskId integerValue]];
+        [cell.taskFinishButton setTag:indexPath.row];
         [cell.taskFinishButton addTarget:self action:@selector(cellButtonPressed:) forControlEvents:UIControlEventTouchUpInside];
+       if (_tableView.editing)
+         [cell changeViewToManageStatus];
+       else
         [cell changeViewToNormalStatus];
         cell.editButton.tag = indexPath.row;
         [cell.editButton addTarget:self action:@selector(startEditTaskViewController:) forControlEvents:UIControlEventTouchUpInside];
@@ -244,11 +263,16 @@
     
     return cell;
 }
-
+//按下cell的完成按钮
 - (void)cellButtonPressed:(UIButton *)sender
 {
      sender.selected = !sender.selected;
+   // NSLog(@"location : %d ,transfer select status : %d",sender.tag,sender.selected);
     _statusDict[@(sender.tag)] = @(sender.selected);
+    NSLog(@"location : %d,bool value : %d", sender.tag,[(NSNumber *) _statusDict[@(sender.tag)] boolValue]);
+   // NSLog(@"transfer select status in dict: %d", [_statusDict[
+      //      @(sender.tag)] boolValue]);
+    [self finishTask:_tasks[(NSUInteger)sender.tag] confirm:sender.selected];
 
 }
 
@@ -303,26 +327,33 @@
 
 //删除
 - (void)deleteTask: (Task *)task
-{  NSFetchRequest *fetchRequest = [[NSFetchRequest alloc] init];
+{  //NSFetchRequest *fetchRequest = [[NSFetchRequest alloc] init];
     AppDelegate *appDelegate = [UIApplication sharedApplication].delegate;
     NSManagedObjectContext *managedContext = [appDelegate managedObjectContext];
-    [fetchRequest setEntity:[NSEntityDescription entityForName:@"Task" inManagedObjectContext:managedContext]];
-   // NSLog(@"taskId : %d",task.taskId);
-    [fetchRequest setPredicate:[NSPredicate predicateWithFormat:@"taskId==%d", [task.taskId integerValue]]];
-
+    [managedContext deleteObject:task];
     NSError* error = nil;
-    NSArray* results = [managedContext executeFetchRequest:fetchRequest error:&error];
-
-    if (results.count > 0) {
-        [managedContext deleteObject:results[0]];
-        //NSLog(@"delete success!");
-    }
-    else
-    {
-        //NSLog(@"delete failed!");
-    }
+    [managedContext save:&error];
+   // [fetchRequest setEntity:[NSEntityDescription entityForName:@"Task" inManagedObjectContext:managedContext]];
+//   // NSLog(@"taskId : %d",task.taskId);
+//    [fetchRequest setPredicate:[NSPredicate predicateWithFormat:@"taskId==%d", [task.taskId integerValue]]];
+//
+//    NSError* error = nil;
+//    NSArray* results = [managedContext executeFetchRequest:fetchRequest error:&error];
+//
+//    if (results.count > 0) {
+//        [managedContext deleteObject:task];
+//        NSLog(@"delete success!");
+//    }
+//    else
+//    {
+//        //NSLog(@"delete failed!");
+//    }
+//    if (![managedContext save:&error]) {
+//        NSLog(@"Couldn't save: %@", error);
+//    }
 
 }
+
 /*
 #pragma mark - Navigation
 
@@ -332,5 +363,86 @@
     // Pass the selected object to the new view controller.
 }
 */
+//判断是否是今天的任务
 
+- (BOOL)isTodayTask: (Task *)task
+{
+   
+    if ([task.activeDay characterAtIndex:(_weekday - 1)] == '1')
+    {
+
+        return true;
+    }
+    else
+        return false;
+}
+
+//根据是不是今天的任务再进行排序
+- (NSMutableArray *)sortTasksWithRank: (NSArray *)taskArray
+{
+    int  i = 1;
+    for (Task *task in taskArray) {
+        if ([task.taskId integerValue] > _maxId)
+        {
+            _maxId = [task.taskId integerValue];
+        }
+        task.rank = @(i);
+        if ([self isTodayTask:task]) {
+            task.rank = @(i * 999);
+        }
+        else
+        {
+            task.rank = @(i);
+        }
+        if (task.finishDay == nil || task.finishDay.length != 7) {
+            task.finishDay = @"0000000";
+        }
+        
+        NSLog(@" %d rank : %ld",i,[task.rank integerValue] );
+        i++;
+        
+    }
+    return [[taskArray sortedArrayUsingComparator:^(id a ,id b)
+            {
+                Task *first = (Task *)a;
+                Task *second = (Task *)b;
+                return [second.rank compare:first.rank];
+            }] mutableCopy];
+}
+
+/**
+* 完成一个任务
+*/
+- (void)finishTask:(Task *)task confirm:(BOOL)isToFinish
+{
+    AppDelegate *appDelegate = [UIApplication sharedApplication].delegate;
+    NSMutableString *finishDayString = [task.finishDay mutableCopy];
+    NSRange range = NSMakeRange((NSUInteger) (_weekday - 1), 1);
+    if (isToFinish) {
+          [finishDayString replaceCharactersInRange:range withString:@"1"];
+    }
+    else
+    {
+       [finishDayString replaceCharactersInRange:range withString:@"0"];
+    }
+    task.finishDay = [finishDayString copy];
+    NSLog(@"task finishday %@",task.finishDay);
+    [appDelegate saveContext];
+    //[self loadTask];
+    // [_tasks removeObjectAtIndex:0];
+    //[self.tableView reloadData];
+
+}
+//更新完成状态
+- (void)updateFinishStatus
+{
+    [_statusDict removeAllObjects];
+    for ( int i = 0 ; i < _tasks.count ; i++)
+    {
+        Task *task = _tasks[(NSUInteger)i];
+        if ([task.finishDay characterAtIndex:(NSUInteger) (_weekday - 1)] == '1')
+            _statusDict[@(i)] = @YES;
+    }
+
+}
 @end

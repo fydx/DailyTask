@@ -16,6 +16,7 @@
 @property (strong, nonatomic) UILabel *taskActiveDay;
 @property (strong, nonatomic) UIImageView *divider;
 @property (strong, nonatomic) UIButton *deleteButton;
+@property BOOL todayTask;
 
 
 //@property (nonatomic) BOOL isFinished;
@@ -51,9 +52,7 @@
        [self setMASLayout];
        [self setViewStyle];
    }
-
     [self bindData:task];
-
 
 }
 - (void)createView
@@ -152,21 +151,41 @@
 
 - (void)bindData: (Task *)task
 {
+    _todayTask = NO;
     _taskName.text =  task.name;
     _taskActiveDay.text = [self convertActiveDaysLabelString:task.activeDay];
+    NSDate *date = [NSDate date];
+    NSDateComponents *componets = [[NSCalendar autoupdatingCurrentCalendar] components:NSCalendarUnitWeekday fromDate:date];
+    NSInteger weekday =  [componets weekday];
+    if ([task.finishDay characterAtIndex:(weekday -1)] == '1') {
+        _taskFinishButton.selected =YES;
+    }
+    else
+    {
+         _taskFinishButton.selected =NO;
+    }
+    
 
 }
 - (NSString *)convertActiveDaysLabelString: (NSString *)taskActiveDayString
 {
     NSMutableString *activeDaysLabelString = [[NSMutableString alloc] initWithCapacity:8];
     NSArray *daysArray = @[@"周日", @"周一", @"周二", @"周三", @"周四", @"周五", @"周六"];
+    
     for (int i = 0 ;i < taskActiveDayString.length ; i++)
     {
        if ([taskActiveDayString characterAtIndex:(NSUInteger) i] == '1') {
            [activeDaysLabelString appendString:daysArray[(NSUInteger) i]];
            [activeDaysLabelString appendString:@"  "];
+          
        }
 
+    }
+    _todayTask = [self isTodayTask:taskActiveDayString];
+    if (!_todayTask) {
+        self.leftMark.hidden = YES;
+        self.contentView.alpha = 0.3;
+        
     }
     return [activeDaysLabelString copy];
 }
@@ -176,6 +195,13 @@
     _deleteButton.hidden = YES;
     _taskFinishButton.hidden = YES;
     _leftMark.hidden = YES;
+    if (!_todayTask) {
+        self.contentView.alpha = 0.3;
+    }
+    else
+     self.contentView.alpha = 1.0;
+        
+    
 }
 
 - (void)changeViewToNormalStatus
@@ -183,6 +209,25 @@
     _editButton.hidden = YES;
     _deleteButton.hidden = YES;
     _taskFinishButton.hidden = NO;
-    _leftMark.hidden = NO;
+    _leftMark.hidden = !_todayTask;
+    if (!_todayTask) {
+        self.contentView.alpha = 0.3;
+    }
+    else
+        self.contentView.alpha = 1.0;
+}
+
+
+- (BOOL)isTodayTask: (NSString *)taskActiveDayString
+{
+    NSDate *date = [NSDate date];
+    NSDateComponents *componets = [[NSCalendar autoupdatingCurrentCalendar] components:NSCalendarUnitWeekday fromDate:date];
+    NSInteger weekday =  [componets weekday];
+    if ([taskActiveDayString characterAtIndex:(weekday - 1)] == '1')
+    {
+        return true;
+    }
+    else
+        return false;
 }
 @end
