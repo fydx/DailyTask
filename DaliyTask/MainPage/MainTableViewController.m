@@ -90,7 +90,7 @@
     {
         addViewController.nextTaskId = @1;
     }
-    NSLog(@"transfer id : %d", [addViewController.nextTaskId integerValue]);
+   // NSLog(@"transfer id : %d", [addViewController.nextTaskId integerValue]);
     [self.navigationController pushViewController:addViewController animated:YES];
 }
 //开启修改页面控制器
@@ -235,8 +235,8 @@
     {
         Task *cellTask = _tasks[(NSUInteger) indexPath.row];
         [cell setView:cellTask];
-        NSLog(@"execute cellforrowatindex !!! id : %d ,transfer select status in cell: %d",[cellTask.taskId integerValue], [_statusDict[@([cellTask.taskId integerValue])] boolValue]) ;
-        NSLog(@"IN CELL location : %d,bool value : %d", indexPath.row,[(NSNumber *) _statusDict[@([cellTask.taskId integerValue])] boolValue]);
+        //NSLog(@"execute cellforrowatindex !!! id : %ld ,transfer select status in cell: %d",(long)[cellTask.taskId integerValue], [_statusDict[@([cellTask.taskId integerValue])] boolValue]) ;
+        NSLog(@"IN CELL location : %ld,id :%d ,rank  : %d", indexPath.row, [cellTask.taskId integerValue],[cellTask.rank integerValue]);
 
         if([_statusDict[@(indexPath.row)] boolValue])
         {
@@ -269,7 +269,7 @@
      sender.selected = !sender.selected;
    // NSLog(@"location : %d ,transfer select status : %d",sender.tag,sender.selected);
     _statusDict[@(sender.tag)] = @(sender.selected);
-    NSLog(@"location : %d,bool value : %d", sender.tag,[(NSNumber *) _statusDict[@(sender.tag)] boolValue]);
+   // NSLog(@"location : %d,bool value : %d", sender.tag,[(NSNumber *) _statusDict[@(sender.tag)] boolValue]);
    // NSLog(@"transfer select status in dict: %d", [_statusDict[
       //      @(sender.tag)] boolValue]);
     [self finishTask:_tasks[(NSUInteger)sender.tag] confirm:sender.selected];
@@ -386,13 +386,13 @@
         {
             _maxId = [task.taskId integerValue];
         }
-        task.rank = @(i);
+        //task.rank = @(i);
         if ([self isTodayTask:task]) {
-            task.rank = @(i * 999);
+            task.rank = @([task.taskId integerValue] * 100);
         }
         else
         {
-            task.rank = @(i);
+            task.rank = @([task.taskId integerValue]);
         }
         if (task.finishDay == nil || task.finishDay.length != 7) {
             task.finishDay = @"0000000";
