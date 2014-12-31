@@ -11,6 +11,7 @@
 #import "AppUtility.h"
 @interface MainTaskTableViewCell()
 
+
 @property (strong, nonatomic) UIImageView *leftMark;
 @property (strong, nonatomic) UILabel *taskName;
 @property (strong, nonatomic) UILabel *taskActiveDay;
@@ -64,6 +65,9 @@
     _divider = [[UIImageView alloc] init];
     _deleteButton = [[UIButton alloc] init];
     _editButton = [[UIButton alloc]init];
+    _leftDelayButton = [[UIButton alloc] init];
+    _rightDeleteButton = [[UIButton alloc] init];
+    _rightEditButton = [[UIButton alloc] init];
     [self.contentView addSubview:_taskName];
     [self.contentView addSubview:_taskActiveDay];
     [self.contentView addSubview:_taskFinishButton];
@@ -75,6 +79,14 @@
 
 - (void)setViewStyle
 {
+    [_leftDelayButton setTitle:@"推迟" forState:UIControlStateNormal];
+    [_rightDeleteButton setTitle:@"删除" forState:UIControlStateNormal];
+    [_rightEditButton setTitle:@"修改" forState:UIControlStateNormal];
+    _leftDelayButton.backgroundColor = [UIColor orangeColor];
+    _rightDeleteButton.backgroundColor = [UIColor redColor];
+    _rightEditButton.backgroundColor = [UIColor lightGrayColor];
+    self.rightUtilityButtons = @[_rightEditButton, _rightDeleteButton ];
+    self.leftUtilityButtons = @[_leftDelayButton];
     self.selectionStyle = UITableViewCellSelectionStyleNone;
     [_taskName setFont:[UIFont systemFontOfSize:20]];
     [_taskActiveDay setFont:[UIFont systemFontOfSize:15]];

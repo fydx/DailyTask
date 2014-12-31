@@ -7,7 +7,8 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "SWTableViewCell.h"
 
-@interface MainTableViewController : UIViewController<UITableViewDelegate, UITableViewDataSource>
+@interface MainTableViewController : UIViewController<UITableViewDelegate, UITableViewDataSource, SWTableViewCellDelegate>
 @property (strong,nonatomic) IBOutlet UITableView *tableView;
 @end

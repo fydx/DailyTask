@@ -39,7 +39,10 @@
     _tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
     [self.tableView registerClass:[MainTaskTableViewCell class] forCellReuseIdentifier:@"MainTaskCell"];
    [self.view addSubview:_tableView];
-
+    UILongPressGestureRecognizer *longPress = [[UILongPressGestureRecognizer alloc]
+            initWithTarget:self action:@selector(longPressGestureRecognized:)];
+    longPress.minimumPressDuration = 0.85;
+    [self.tableView addGestureRecognizer:longPress];
     //[_tableView setEditing:YES animated:YES];
    // NSLog(@"count :%@", [_tasks objectAtIndex:@1]);
     // Uncomment the following line to preserve selection between presentations.
@@ -58,6 +61,87 @@
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.
+}
+- (IBAction)longPressGestureRecognized:(id)sender {
+
+    UILongPressGestureRecognizer *longPress = (UILongPressGestureRecognizer *)sender;
+    UIGestureRecognizerState state = longPress.state;
+
+    CGPoint location = [longPress locationInView:_tableView];
+    NSIndexPath *indexPath = [self.tableView indexPathForRowAtPoint:location];
+    static UIView       *snapshot = nil;        ///< A snapshot of the row user is moving.
+    static NSIndexPath  *sourceIndexPath = nil; ///< Initial index path, where gesture begins.
+    switch (state)
+    {
+        case UIGestureRecognizerStateBegan :
+        {
+            if (indexPath)
+            {
+                sourceIndexPath = indexPath;
+                MainTaskTableViewCell *cell = (MainTaskTableViewCell *) [_tableView cellForRowAtIndexPath:indexPath];
+                snapshot = [self customSnapshotFromView:cell];
+                __block CGPoint center = cell.center;
+                snapshot.center = center;
+                snapshot.alpha = 0.0;
+                [self.tableView addSubview:snapshot];
+                [UIView animateWithDuration:0.25 animations:^{
+
+                    // Offset for gesture location.
+                    center.y = location.y;
+                    snapshot.center = center;
+                    snapshot.transform = CGAffineTransformMakeScale(1.05, 1.05);
+                    snapshot.alpha = 0.98;
+
+                    // Black out.
+                    cell.hidden = YES;
+                    cell.backgroundColor = [UIColor whiteColor];
+                } completion:nil];
+            }
+            break;
+            }
+        case UIGestureRecognizerStateChanged: {
+            CGPoint center = snapshot.center;
+            center.y = location.y;
+            snapshot.center = center;
+            // Is destination valid and is it different from source?
+            if (indexPath && ![indexPath isEqual:sourceIndexPath]) {
+
+                // ... update data source.
+                [_tasks exchangeObjectAtIndex:indexPath.row withObjectAtIndex:sourceIndexPath.row];
+
+                // ... move the rows.
+                [self.tableView moveRowAtIndexPath:sourceIndexPath toIndexPath:indexPath];
+
+                // ... and update source so it is in sync with UI changes.
+                sourceIndexPath = indexPath;
+            }
+            break;
+        }
+        default: {
+            // Clean up.
+            UITableViewCell *cell = [self.tableView cellForRowAtIndexPath:sourceIndexPath];
+            [UIView animateWithDuration:0.25 animations:^{
+
+                snapshot.center = cell.center;
+                snapshot.transform = CGAffineTransformIdentity;
+                snapshot.alpha = 0.0;
+
+                // Undo the black-out effect we did.
+                cell.backgroundColor = [UIColor whiteColor];
+                cell.hidden = NO;
+
+            } completion:^(BOOL finished) {
+
+                [snapshot removeFromSuperview];
+                snapshot = nil;
+
+            }];
+            sourceIndexPath = nil;
+            break;
+        }
+    }
+
+    // More coming soon...
 }
 //设置导航栏
 - (void)setNavigationBar
@@ -94,13 +178,10 @@
     [self.navigationController pushViewController:addViewController animated:YES];
 }
 //开启修改页面控制器
-- (void)startEditTaskViewController: (UIButton *)button
+- (void)startEditTaskViewController: (NSUInteger)index
 {
-    NSInteger taskRow = button.tag;
     AddViewController *addViewController = [[AddViewController alloc] init];
-    //[addViewController bindData:_tasks[(NSUInteger) taskRow]];
-   // addViewController.existTask = _tasks[(NSUInteger) taskRow];
-    Task *editTask  =  _tasks[(NSUInteger) taskRow];
+    Task *editTask  =  _tasks[index];
     addViewController.taskId = [editTask.taskId integerValue];
     [self.navigationController pushViewController:addViewController animated:YES];
 }
@@ -173,39 +254,7 @@
    // [_tasks removeObjectAtIndex:0];
     [self.tableView reloadData];
 }
-// 点击事件
-- (IBAction)buttonAddPress:(id)sender {
-    [self addFakeTask];
-    [UIView transitionWithView:_tableView
-                duration:0.5f
-                options:UIViewAnimationOptionTransitionCrossDissolve
-                animations:^{
-                    [self loadTask];
-                   // [_tasks addObject:_tasks[1]];
-                    [_tableView reloadData];
-                } completion:^(BOOL finished) {
 
-            }];
-}
-- (void)sampleAnim
-{
-    [UIView transitionWithView:_tableView
-                      duration:0.5f
-                       options:UIViewAnimationOptionTransitionCrossDissolve
-                    animations:^{
-                       [self deleteTask];
-                    } completion:^(BOOL finished) {
-                       // [self buttonAddPress:nil];
-            }];
-}
-- (void)deleteTaskWithAnim
-{
-    AppDelegate *appDelegate = [UIApplication sharedApplication].delegate;
-    [appDelegate.managedObjectContext deleteObject:_tasks[2]];
-    [appDelegate saveContext];
-    [self loadTask];
-    [self.tableView reloadData];
-}
 #pragma mark - Table view data source
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
@@ -249,14 +298,16 @@
         }
 
        // int rownumber =  indexPath.row;
+        cell.delegate = self;
         [cell.taskFinishButton setTag:indexPath.row];
         [cell.taskFinishButton addTarget:self action:@selector(cellButtonPressed:) forControlEvents:UIControlEventTouchUpInside];
        if (_tableView.editing)
          [cell changeViewToManageStatus];
        else
         [cell changeViewToNormalStatus];
-        cell.editButton.tag = indexPath.row;
-        [cell.editButton addTarget:self action:@selector(startEditTaskViewController:) forControlEvents:UIControlEventTouchUpInside];
+
+      //  cell.editButton.tag = indexPath.row;
+      //  [cell.editButton addTarget:self action:@selector(startEditTaskViewController:) forControlEvents:UIControlEventTouchUpInside];
         //[cell reloadFinishStatus];
     }
     // Configure the cell...
@@ -303,9 +354,7 @@
     if (editingStyle == UITableViewCellEditingStyleDelete) {
         // Delete the row from the data source
         //[tableView deleteRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationFade];
-        [self deleteTask:_tasks[(NSUInteger) indexPath.row]];
-        [_tasks removeObjectAtIndex:(NSUInteger) indexPath.row];
-        [_tableView reloadSections:[NSIndexSet indexSetWithIndex:0] withRowAnimation:UITableViewRowAnimationFade];
+
     } else if (editingStyle == UITableViewCellEditingStyleInsert) {
         // Create a new instance of the appropriate class, insert it into the array, and add a new row to the table view
     }
@@ -333,24 +382,6 @@
     [managedContext deleteObject:task];
     NSError* error = nil;
     [managedContext save:&error];
-   // [fetchRequest setEntity:[NSEntityDescription entityForName:@"Task" inManagedObjectContext:managedContext]];
-//   // NSLog(@"taskId : %d",task.taskId);
-//    [fetchRequest setPredicate:[NSPredicate predicateWithFormat:@"taskId==%d", [task.taskId integerValue]]];
-//
-//    NSError* error = nil;
-//    NSArray* results = [managedContext executeFetchRequest:fetchRequest error:&error];
-//
-//    if (results.count > 0) {
-//        [managedContext deleteObject:task];
-//        NSLog(@"delete success!");
-//    }
-//    else
-//    {
-//        //NSLog(@"delete failed!");
-//    }
-//    if (![managedContext save:&error]) {
-//        NSLog(@"Couldn't save: %@", error);
-//    }
 
 }
 
@@ -428,9 +459,6 @@
     task.finishDay = [finishDayString copy];
     NSLog(@"task finishday %@",task.finishDay);
     [appDelegate saveContext];
-    //[self loadTask];
-    // [_tasks removeObjectAtIndex:0];
-    //[self.tableView reloadData];
 
 }
 //更新完成状态
@@ -445,4 +473,58 @@
     }
 
 }
+// 截取tableviewcell的view
+- (UIView *)customSnapshotFromView:(UIView *)inputView {
+
+    UIView *snapshot = [inputView snapshotViewAfterScreenUpdates:YES];
+    snapshot.alpha = 0.1;
+    snapshot.layer.masksToBounds = NO;
+    snapshot.layer.cornerRadius = 0.0;
+    snapshot.layer.shadowOffset = CGSizeMake(-5.0, 0.0);
+    snapshot.layer.shadowRadius = 5.0;
+    snapshot.layer.shadowOpacity = 0.4;
+    return snapshot;
+}
+
+// click event on left utility button
+- (void)swipeableTableViewCell:(SWTableViewCell *)cell didTriggerLeftUtilityButtonWithIndex:(NSInteger)index
+{
+    switch (index) {
+        case 0:
+            NSLog(@"check button was pressed");
+            break;
+
+        default:
+            NSLog(@"list button was pressed");
+            break;
+    }
+};
+
+// click event on right utility button
+- (void)swipeableTableViewCell:(SWTableViewCell *)cell didTriggerRightUtilityButtonWithIndex:(NSInteger)index
+{
+    switch (index) {
+        case 0:
+        {
+            NSIndexPath *indexPath = [_tableView indexPathForCell:cell];
+            [self startEditTaskViewController:(NSUInteger) indexPath.row];
+            break;
+        }
+
+        case 1:
+        {
+            NSIndexPath *indexPath = [_tableView indexPathForCell:cell];
+            [self deleteTask:_tasks[(NSUInteger) indexPath.row]];
+            [_tasks removeObjectAtIndex:(NSUInteger) indexPath.row];
+            [_tableView reloadSections:[NSIndexSet indexSetWithIndex:0] withRowAnimation:UITableViewRowAnimationFade];
+            break;
+        }
+
+
+        default:
+            NSLog(@"list button was pressed");
+            break;
+    }
+};
+
 @end
