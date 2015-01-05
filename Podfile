@@ -1,3 +1,5 @@
 platform :ios, '7.0'
 pod 'Masonry' , '~> 0.5.3'
 pod 'SWTableViewCell', '~> 0.3.7'
+pod 'JTCalendar', '~> 1.1'
+pod 'RESideMenu', '~> 4.0.7'

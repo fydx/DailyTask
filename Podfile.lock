@@ -1,13 +1,19 @@
 PODS:
+  - JTCalendar (1.1.11)
   - Masonry (0.5.3)
+  - RESideMenu (4.0.7)
   - SWTableViewCell (0.3.7)
 
 DEPENDENCIES:
+  - JTCalendar (~> 1.1)
   - Masonry (~> 0.5.3)
+  - RESideMenu (~> 4.0.7)
   - SWTableViewCell (~> 0.3.7)
 
 SPEC CHECKSUMS:
+  JTCalendar: 0d4a11e8658ba947f1502a240778746f5777c1cc
   Masonry: f28f43390ffe10dd172cea59b7d48be8c9021f04
+  RESideMenu: a9c1cd2e64e60e1d3166ddac01a83e215a0e4d30
   SWTableViewCell: 25de71898e3fcd11cf75707ef90245acf990ec03
 
 COCOAPODS: 0.35.0

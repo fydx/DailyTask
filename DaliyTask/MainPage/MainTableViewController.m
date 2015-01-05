@@ -6,18 +6,21 @@
 //  Copyright (c) 2014年 LiBin. All rights reserved.
 //
 
+#import <Masonry/View+MASAdditions.h>
 #import "MainTableViewController.h"
 #import "AppUtility.h"
 #import "AppDelegate.h"
 #import "Task.h"
 #import "MainTaskTableViewCell.h"
 #import "AddViewController.h"
+#import "CalendarViewController.h"
 
 @interface MainTableViewController ()
 @property (strong, nonatomic) NSMutableArray *tasks;    //任务，内存中的数据源
 @property (strong, nonatomic) NSMutableDictionary *statusDict;         //记录是否被勾选
-@property NSInteger weekday;
-@property  int maxId;
+@property (strong, nonatomic) UILabel *topLabel;
+@property  NSInteger weekday;
+@property  (nonatomic) long  maxId;
 @end
 
 @implementation MainTableViewController
@@ -28,6 +31,9 @@
     [self setNavigationBar];
     //[self loadTask];
     //[self.view addSubview:_tableView];
+    _topLabel = [[UILabel alloc] init];
+    _topLabel.hidden= NO;
+    [self.view addSubview:_topLabel];
     NSDate *date = [NSDate date];
     NSDateComponents *componets = [[NSCalendar autoupdatingCurrentCalendar] components:NSCalendarUnitWeekday fromDate:date];
      _weekday =  [componets weekday];
@@ -39,10 +45,19 @@
     _tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
     [self.tableView registerClass:[MainTaskTableViewCell class] forCellReuseIdentifier:@"MainTaskCell"];
    [self.view addSubview:_tableView];
-    UILongPressGestureRecognizer *longPress = [[UILongPressGestureRecognizer alloc]
-            initWithTarget:self action:@selector(longPressGestureRecognized:)];
-    longPress.minimumPressDuration = 0.85;
-    [self.tableView addGestureRecognizer:longPress];
+
+
+    [self setViews];
+    _topLabel.textColor= [UIColor whiteColor];
+    _topLabel.textAlignment = NSTextAlignmentCenter;
+    [_topLabel setFont:[UIFont systemFontOfSize:14]];
+    //长按排序部分,勿删
+//      UILongPressGestureRecognizer *longPress = [[UILongPressGestureRecognizer alloc]
+//            initWithTarget:self action:@selector(longPressGestureRecognized:)];
+//    longPress.minimumPressDuration = 0.85;
+//    [self.tableView addGestureRecognizer:longPress];
+
+
     //[_tableView setEditing:YES animated:YES];
    // NSLog(@"count :%@", [_tasks objectAtIndex:@1]);
     // Uncomment the following line to preserve selection between presentations.
@@ -50,6 +65,7 @@
 
     // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
     // self.navigationItem.rightBarButtonItem = self.editButtonItem;
+
 }
 - (void)viewWillAppear:(BOOL)animated
 {
@@ -57,10 +73,31 @@
     [self loadTask];
     [self updateFinishStatus];
     [_tableView reloadData];
+    [self updateTopBar];
 }
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.
+}
+
+- (void)setViews
+{
+    [_topLabel mas_makeConstraints:^(MASConstraintMaker *maker)
+    {
+//       maker.left.equalTo(self.view.mas_left);
+//        maker.right.equalTo(self.view.mas_right);
+        maker.top.equalTo(self.view);
+        maker.height.greaterThanOrEqualTo(@30);
+        maker.width.equalTo(self.view);
+
+    }];
+    [_tableView mas_makeConstraints:^(MASConstraintMaker *maker)
+    {
+        maker.left.equalTo(self.view);
+        maker.right.equalTo(self.view);
+        maker.top.equalTo(_topLabel.mas_bottom);
+        maker.bottom.equalTo(self.view);
+    }];
 }
 - (IBAction)longPressGestureRecognized:(id)sender {
 
@@ -107,7 +144,7 @@
             if (indexPath && ![indexPath isEqual:sourceIndexPath]) {
 
                 // ... update data source.
-                [_tasks exchangeObjectAtIndex:indexPath.row withObjectAtIndex:sourceIndexPath.row];
+                [_tasks exchangeObjectAtIndex:(NSUInteger) indexPath.row withObjectAtIndex:(NSUInteger) sourceIndexPath.row];
 
                 // ... move the rows.
                 [self.tableView moveRowAtIndexPath:sourceIndexPath toIndexPath:indexPath];
@@ -145,7 +182,7 @@
 }
 //设置导航栏
 - (void)setNavigationBar
-{
+{    self.edgesForExtendedLayout = UIRectEdgeNone;
     // 设置导航栏为蓝色，statusbar，title为白色
     [self.navigationController.navigationBar setBarTintColor:UIColorFromRGB(BLUE)];
     self.title = @"日常";
@@ -153,13 +190,18 @@
     [[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleLightContent];
     self.navigationController.navigationBar.titleTextAttributes = @{NSForegroundColorAttributeName: UIColorFromRGB(0xffffff)};
     UIBarButtonItem *addItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAdd target:self action:@selector(startAddViewController)];
-    //UIBarButtonItem *deleteItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemTrash target:self action:@selector(sampleAnim)];
+    UIBarButtonItem *deleteItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemTrash target:self action:@selector(sampleAnim)];
     UIBarButtonItem *shareItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemBookmarks target:self action:@selector(changeEditingMode)];
-    NSArray *actionButtonItems = @[addItem];
+    NSArray *actionButtonItems = @[addItem,deleteItem];
     self.navigationItem.rightBarButtonItems = actionButtonItems;
     self.navigationItem.leftBarButtonItem = shareItem;
 
 
+}
+- (void)sampleAnim
+{
+    CalendarViewController *calendarViewController = [[CalendarViewController alloc] init];
+    [self.navigationController pushViewController:calendarViewController animated:YES];
 }
 //开启新页面控制器
 - (void)startAddViewController
@@ -188,11 +230,14 @@
 //进入/取消修改模式
 - (void) changeEditingMode
 {
-    [_tableView setEditing:!_tableView.editing animated:YES];
-    if (_tableView.editing == NO) {
-        
-       [_tableView reloadSections:[NSIndexSet indexSetWithIndex:0] withRowAnimation:UITableViewRowAnimationFade];
-    }
+    [self.sideMenuViewController presentLeftMenuViewController];
+
+    // [self.]
+//    [_tableView setEditing:!_tableView.editing animated:YES];
+//    if (_tableView.editing == NO) {
+//
+//       [_tableView reloadSections:[NSIndexSet indexSetWithIndex:0] withRowAnimation:UITableViewRowAnimationFade];
+//    }
 
 }
 // 从数据库中读取任务数据
@@ -278,6 +323,7 @@
     MainTaskTableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier forIndexPath:indexPath];
     if(cell == nil)
     {
+        NSLog(@"cell is nil");
         cell = [[MainTaskTableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier task:_tasks[(NSUInteger) indexPath.row]];
     }
     else
@@ -285,7 +331,7 @@
         Task *cellTask = _tasks[(NSUInteger) indexPath.row];
         [cell setView:cellTask];
         //NSLog(@"execute cellforrowatindex !!! id : %ld ,transfer select status in cell: %d",(long)[cellTask.taskId integerValue], [_statusDict[@([cellTask.taskId integerValue])] boolValue]) ;
-        NSLog(@"IN CELL location : %ld,id :%d ,rank  : %d", indexPath.row, [cellTask.taskId integerValue],[cellTask.rank integerValue]);
+//        NSLog(@"IN CELL location : %ld,id :%ld ,rank  : %d", indexPath.row, (long)[cellTask.taskId integerValue],[cellTask.rank integerValue]);
 
         if([_statusDict[@(indexPath.row)] boolValue])
         {
@@ -399,7 +445,7 @@
 - (BOOL)isTodayTask: (Task *)task
 {
    
-    if ([task.activeDay characterAtIndex:(_weekday - 1)] == '1')
+    if ([task.activeDay characterAtIndex:(NSUInteger) (_weekday - 1)] == '1')
     {
 
         return true;
@@ -429,7 +475,7 @@
             task.finishDay = @"0000000";
         }
         
-        NSLog(@" %d rank : %ld",i,[task.rank integerValue] );
+        //NSLog(@" %d rank : %ld",i,[task.rank integerValue] );
         i++;
         
     }
@@ -457,13 +503,25 @@
        [finishDayString replaceCharactersInRange:range withString:@"0"];
     }
     task.finishDay = [finishDayString copy];
-    NSLog(@"task finishday %@",task.finishDay);
+    //NSLog(@"task finishday %@",task.finishDay);
     [appDelegate saveContext];
+    [self updateTopBar];
 
 }
 //更新完成状态
 - (void)updateFinishStatus
 {
+
+    NSDate *date = [NSDate date];
+    NSDateComponents *componets = [[NSCalendar autoupdatingCurrentCalendar] components:NSCalendarUnitWeekday fromDate:date];
+    NSInteger  weekOfYear =  [componets weekOfYear];
+    NSUserDefaults *weekDefault = [NSUserDefaults standardUserDefaults];
+    if (weekOfYear != [[weekDefault objectForKey:@"WeekOfYear"] integerValue])
+    {
+        [self resetAllTaskFinishDay];
+        [weekDefault setObject:@(weekOfYear) forKey:@"WeekOfYear"];
+    }
+
     [_statusDict removeAllObjects];
     for ( int i = 0 ; i < _tasks.count ; i++)
     {
@@ -471,6 +529,20 @@
         if ([task.finishDay characterAtIndex:(NSUInteger) (_weekday - 1)] == '1')
             _statusDict[@(i)] = @YES;
     }
+
+
+}
+- (void)resetAllTaskFinishDay
+{
+    AppDelegate *appDelegate = [UIApplication sharedApplication].delegate;
+    NSManagedObjectContext *managedContext = appDelegate.managedObjectContext;
+    for (Task *task in _tasks)
+    {
+        task.finishDay = @"0000000";
+    }
+    [managedContext save:nil];
+
+
 
 }
 // 截取tableviewcell的view
@@ -480,7 +552,7 @@
     snapshot.alpha = 0.1;
     snapshot.layer.masksToBounds = NO;
     snapshot.layer.cornerRadius = 0.0;
-    snapshot.layer.shadowOffset = CGSizeMake(-5.0, 0.0);
+    snapshot.layer.shadowOffset = CGSizeMake((CGFloat) -5.0, 0.0);
     snapshot.layer.shadowRadius = 5.0;
     snapshot.layer.shadowOpacity = 0.4;
     return snapshot;
@@ -525,6 +597,28 @@
             NSLog(@"list button was pressed");
             break;
     }
-};
+}
+- (void)updateTopBar
+{
+    int remainedTask  =  0 ;
+    for (Task *task in _tasks)
+    {
+        if([task.finishDay characterAtIndex:(NSUInteger) _weekday -1 ] == '0' && [task.activeDay characterAtIndex:(NSUInteger)_weekday-1] == '1')
+            remainedTask++;
+    }
+    if(remainedTask == 0)
+        {
+            _topLabel.text = @"已完成今天所有日常";
+            _topLabel.backgroundColor = UIColorFromRGB(0x0BD318);
+
+    }
+    else
+    {
+        NSString *text = [NSString stringWithFormat:@"今天还有%d个日常未完成",remainedTask];
+        _topLabel.text = text;
+        _topLabel.backgroundColor = [UIColor grayColor];
+    }
+}
+
 
 @end

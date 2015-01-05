@@ -8,11 +8,11 @@
 
 /* Begin PBXBuildFile section */
 		113E709B4A9A22F3D8D46B7D /* libPods.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 75B639789799C0D212BA18E4 /* libPods.a */; };
+		6232251EEC6EE04CE3CD19A9 /* SideMenuViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 62322CE001732C1CD65063D6 /* SideMenuViewController.m */; };
 		DA4E36971A415CA9007157FC /* AddViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = DA4E36961A415CA9007157FC /* AddViewController.m */; };
 		DA95C2891A36A349003B1773 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = DA95C2881A36A349003B1773 /* main.m */; };
 		DA95C28C1A36A349003B1773 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = DA95C28B1A36A349003B1773 /* AppDelegate.m */; };
 		DA95C28F1A36A349003B1773 /* DaliyTask.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = DA95C28D1A36A349003B1773 /* DaliyTask.xcdatamodeld */; };
-		DA95C2921A36A349003B1773 /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = DA95C2911A36A349003B1773 /* ViewController.m */; };
 		DA95C2951A36A349003B1773 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = DA95C2931A36A349003B1773 /* Main.storyboard */; };
 		DA95C2971A36A349003B1773 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = DA95C2961A36A349003B1773 /* Images.xcassets */; };
 		DA95C29A1A36A349003B1773 /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = DA95C2981A36A349003B1773 /* LaunchScreen.xib */; };
@@ -20,6 +20,7 @@
 		DA95C2B91A36D2A7003B1773 /* MainTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = DA95C2B81A36D2A7003B1773 /* MainTableViewController.m */; };
 		DA95C2BE1A36F0FC003B1773 /* MainTaskTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = DA95C2BD1A36F0FC003B1773 /* MainTaskTableViewCell.m */; };
 		DA95C2C11A37206D003B1773 /* Task.m in Sources */ = {isa = PBXBuildFile; fileRef = DA95C2C01A37206D003B1773 /* Task.m */; };
+		DADC0F8C1A5AE3E70008D169 /* CalendarViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = DADC0F8B1A5AE3E70008D169 /* CalendarViewController.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -33,6 +34,8 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		62322CE001732C1CD65063D6 /* SideMenuViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SideMenuViewController.m; sourceTree = "<group>"; };
+		62322DBA13BD915F6A86D61C /* SideMenuViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SideMenuViewController.h; sourceTree = "<group>"; };
 		75B639789799C0D212BA18E4 /* libPods.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libPods.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		D2AB472CA331FA0DCA6CA535 /* Pods.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.release.xcconfig; path = "Pods/Target Support Files/Pods/Pods.release.xcconfig"; sourceTree = "<group>"; };
 		DA4E36951A415CA9007157FC /* AddViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AddViewController.h; path = AddPage/AddViewController.h; sourceTree = "<group>"; };
@@ -43,8 +46,6 @@
 		DA95C28A1A36A349003B1773 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		DA95C28B1A36A349003B1773 /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
 		DA95C28E1A36A349003B1773 /* DaliyTask.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = DaliyTask.xcdatamodel; sourceTree = "<group>"; };
-		DA95C2901A36A349003B1773 /* ViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ViewController.h; sourceTree = "<group>"; };
-		DA95C2911A36A349003B1773 /* ViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ViewController.m; sourceTree = "<group>"; };
 		DA95C2941A36A349003B1773 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		DA95C2961A36A349003B1773 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
 		DA95C2991A36A349003B1773 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/LaunchScreen.xib; sourceTree = "<group>"; };
@@ -58,6 +59,8 @@
 		DA95C2BD1A36F0FC003B1773 /* MainTaskTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MainTaskTableViewCell.m; sourceTree = "<group>"; };
 		DA95C2BF1A37206D003B1773 /* Task.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Task.h; path = Model/Task.h; sourceTree = "<group>"; };
 		DA95C2C01A37206D003B1773 /* Task.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = Task.m; path = Model/Task.m; sourceTree = "<group>"; };
+		DADC0F8A1A5AE3E70008D169 /* CalendarViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CalendarViewController.h; path = Calendar/CalendarViewController.h; sourceTree = "<group>"; };
+		DADC0F8B1A5AE3E70008D169 /* CalendarViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CalendarViewController.m; path = Calendar/CalendarViewController.m; sourceTree = "<group>"; };
 		F9197A014C1E15CB794749B8 /* Pods.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.debug.xcconfig; path = "Pods/Target Support Files/Pods/Pods.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -86,6 +89,15 @@
 				75B639789799C0D212BA18E4 /* libPods.a */,
 			);
 			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		6232263D2EDA6786D027F512 /* SideMenu */ = {
+			isa = PBXGroup;
+			children = (
+				62322DBA13BD915F6A86D61C /* SideMenuViewController.h */,
+				62322CE001732C1CD65063D6 /* SideMenuViewController.m */,
+			);
+			path = SideMenu;
 			sourceTree = "<group>";
 		};
 		D10ACE92627E2890757FD40D /* Pods */ = {
@@ -129,11 +141,8 @@
 		DA95C2851A36A348003B1773 /* DaliyTask */ = {
 			isa = PBXGroup;
 			children = (
+				DADC0F8D1A5AE4FF0008D169 /* Calendar */,
 				DA4E36941A415C7B007157FC /* AddPage */,
-				DA95C28A1A36A349003B1773 /* AppDelegate.h */,
-				DA95C28B1A36A349003B1773 /* AppDelegate.m */,
-				DA95C2901A36A349003B1773 /* ViewController.h */,
-				DA95C2911A36A349003B1773 /* ViewController.m */,
 				DA95C2931A36A349003B1773 /* Main.storyboard */,
 				DA95C2961A36A349003B1773 /* Images.xcassets */,
 				DA95C2981A36A349003B1773 /* LaunchScreen.xib */,
@@ -142,6 +151,7 @@
 				DA95C2B21A36A402003B1773 /* Model */,
 				DA95C2B61A36D1D1003B1773 /* MainPage */,
 				DA95C2BB1A36DCC2003B1773 /* Utility */,
+				6232263D2EDA6786D027F512 /* SideMenu */,
 			);
 			path = DaliyTask;
 			sourceTree = "<group>";
@@ -149,6 +159,8 @@
 		DA95C2861A36A348003B1773 /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
+				DA95C28A1A36A349003B1773 /* AppDelegate.h */,
+				DA95C28B1A36A349003B1773 /* AppDelegate.m */,
 				DA95C2871A36A348003B1773 /* Info.plist */,
 				DA95C2881A36A349003B1773 /* main.m */,
 			);
@@ -198,6 +210,15 @@
 				DA95C2BA1A36DCBE003B1773 /* AppUtility.h */,
 			);
 			name = Utility;
+			sourceTree = "<group>";
+		};
+		DADC0F8D1A5AE4FF0008D169 /* Calendar */ = {
+			isa = PBXGroup;
+			children = (
+				DADC0F8A1A5AE3E70008D169 /* CalendarViewController.h */,
+				DADC0F8B1A5AE3E70008D169 /* CalendarViewController.m */,
+			);
+			name = Calendar;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -336,13 +357,14 @@
 			buildActionMask = 2147483647;
 			files = (
 				DA95C2C11A37206D003B1773 /* Task.m in Sources */,
+				DADC0F8C1A5AE3E70008D169 /* CalendarViewController.m in Sources */,
 				DA95C28C1A36A349003B1773 /* AppDelegate.m in Sources */,
 				DA95C2B91A36D2A7003B1773 /* MainTableViewController.m in Sources */,
 				DA95C2BE1A36F0FC003B1773 /* MainTaskTableViewCell.m in Sources */,
 				DA95C28F1A36A349003B1773 /* DaliyTask.xcdatamodeld in Sources */,
-				DA95C2921A36A349003B1773 /* ViewController.m in Sources */,
 				DA4E36971A415CA9007157FC /* AddViewController.m in Sources */,
 				DA95C2891A36A349003B1773 /* main.m in Sources */,
+				6232251EEC6EE04CE3CD19A9 /* SideMenuViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

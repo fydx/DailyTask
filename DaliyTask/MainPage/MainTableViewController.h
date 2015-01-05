@@ -8,6 +8,7 @@
 
 #import <UIKit/UIKit.h>
 #import "SWTableViewCell.h"
+#import "RESideMenu.h"
 
 @interface MainTableViewController : UIViewController<UITableViewDelegate, UITableViewDataSource, SWTableViewCellDelegate>
 @property (strong,nonatomic) IBOutlet UITableView *tableView;

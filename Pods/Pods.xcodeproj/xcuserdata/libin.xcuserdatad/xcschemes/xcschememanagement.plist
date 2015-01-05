@@ -4,7 +4,17 @@
 <dict>
 	<key>SchemeUserState</key>
 	<dict>
+		<key>Pods-JTCalendar.xcscheme</key>
+		<dict>
+			<key>isShown</key>
+			<false/>
+		</dict>
 		<key>Pods-Masonry.xcscheme</key>
+		<dict>
+			<key>isShown</key>
+			<false/>
+		</dict>
+		<key>Pods-RESideMenu.xcscheme</key>
 		<dict>
 			<key>isShown</key>
 			<false/>
@@ -22,17 +32,27 @@
 	</dict>
 	<key>SuppressBuildableAutocreation</key>
 	<dict>
-		<key>AB601E0D04D46F2E78B4C7C9</key>
+		<key>2B3B53819755FF3C8F596C19</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>E66303DE4DBC7FCC80577ACB</key>
+		<key>35E72F11619E051F15B9BC5E</key>
 		<dict>
 			<key>primary</key>
 			<true/>
 		</dict>
-		<key>F7D1136CE54E5A9F06CB66FC</key>
+		<key>6CB1DB6B35E669701D28C6CE</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>7E0E3BE2DF77A558016015C8</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>C955827ECF154D32FA134169</key>
 		<dict>
 			<key>primary</key>
 			<true/>
