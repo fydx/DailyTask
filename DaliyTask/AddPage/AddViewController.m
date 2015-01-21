@@ -76,12 +76,6 @@
     //self.navigationController.navigationBar.topItem.title = @"日常";
     [[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleLightContent];
     self.navigationController.navigationBar.titleTextAttributes = @{NSForegroundColorAttributeName: UIColorFromRGB(0xffffff)};
- //   UIBarButtonItem *shareItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAdd target:self action:@selector(buttonAddPress:)];
- //   UIBarButtonItem *deleteItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemTrash target:self action:@selector(sampleAnim)];
- //   UIBarButtonItem *addItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemBookmarks target:self action:@selector(startAddViewController)];
-  //  NSArray *actionButtonItems = @[shareItem,deleteItem];
-  //  self.navigationItem.rightBarButtonItems = actionButtonItems;
-  //  self.navigationItem.leftBarButtonItem = addItem;
 
 
 }
@@ -284,7 +278,7 @@
 - (void)loadEditTask
 {
     NSFetchRequest *fetchRequest = [[NSFetchRequest alloc] init];
-    AppDelegate *appDelegate = [UIApplication sharedApplication].delegate;
+    AppDelegate *appDelegate = (AppDelegate *)[UIApplication sharedApplication].delegate;
     NSManagedObjectContext *managedContext = [appDelegate managedObjectContext];
     [fetchRequest setEntity:[NSEntityDescription entityForName:@"Task" inManagedObjectContext:managedContext]];
     [fetchRequest setPredicate:[NSPredicate predicateWithFormat:@"taskId==%d", _taskId]];
@@ -298,7 +292,7 @@
 }
 - (void)saveEditTask
 {
-    AppDelegate *appDelegate = [UIApplication sharedApplication].delegate;
+    AppDelegate *appDelegate = (AppDelegate *)[UIApplication sharedApplication].delegate;
     NSMutableString *selectDaysStatusString = [[NSMutableString alloc] initWithCapacity:7];
     _existTask.name = _titleTextField.text;
     if (_fixedButton.selected) {
@@ -320,7 +314,7 @@
     [appDelegate saveContext];
 }
 - (void)saveTask {
-    AppDelegate *appDelegate = [UIApplication sharedApplication].delegate;
+    AppDelegate *appDelegate = (AppDelegate *)[UIApplication sharedApplication].delegate;
     NSManagedObjectContext *managedContext = [appDelegate managedObjectContext];
     if (managedContext != nil) {
         NSMutableString *selectDaysStatusString = [[NSMutableString alloc] initWithCapacity:7];

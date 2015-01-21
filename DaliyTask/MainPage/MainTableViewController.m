@@ -14,6 +14,7 @@
 #import "MainTaskTableViewCell.h"
 #import "AddViewController.h"
 #import "CalendarViewController.h"
+#import "CalendarTaskDay.h"
 
 @interface MainTableViewController ()
 @property (strong, nonatomic) NSMutableArray *tasks;    //任务，内存中的数据源
@@ -243,7 +244,7 @@
 // 从数据库中读取任务数据
 - (void)loadTask
 {
-    AppDelegate *appDelegate = [UIApplication sharedApplication].delegate;
+    AppDelegate *appDelegate = (AppDelegate *)[UIApplication sharedApplication].delegate;
     NSManagedObjectContext *managedContext = appDelegate.managedObjectContext;
     //指定数据表
     NSEntityDescription *entity = [NSEntityDescription entityForName:@"Task" inManagedObjectContext:managedContext];
@@ -256,10 +257,7 @@
     //接收查询出来的数据
     NSArray *arr = [managedContext executeFetchRequest:request error:&error];
     self.tasks = [self sortTasksWithRank:arr] ;
-  
-    //NSLog(@"number %d", self.tasks.count);
-   // Task *task =   [_tasks objectAtIndex:1];
-   // NSLog(@"day :%@",task.activeDay);
+
 
 }
 
@@ -267,7 +265,7 @@
 - (void)addFakeTask
 {
     //通信中心，通过此单例找到appDeleage中的数据库
-    AppDelegate *appDelegate = [UIApplication sharedApplication].delegate;
+    AppDelegate *appDelegate = (AppDelegate *)[UIApplication sharedApplication].delegate;
     NSManagedObjectContext *managedContext  = [appDelegate managedObjectContext];
     if (managedContext != nil) {
         Task *fakeTask = [NSEntityDescription insertNewObjectForEntityForName:@"Task" inManagedObjectContext:managedContext];
@@ -289,16 +287,7 @@
     }
 
 }
-//删除一个task，以弃用
-- (void)deleteTask
-{
-   AppDelegate *appDelegate = [UIApplication sharedApplication].delegate;
-    [appDelegate.managedObjectContext deleteObject:_tasks[0]];
-    [appDelegate saveContext];
-    [self loadTask];
-   // [_tasks removeObjectAtIndex:0];
-    [self.tableView reloadData];
-}
+
 
 #pragma mark - Table view data source
 
@@ -423,7 +412,7 @@
 //删除
 - (void)deleteTask: (Task *)task
 {  //NSFetchRequest *fetchRequest = [[NSFetchRequest alloc] init];
-    AppDelegate *appDelegate = [UIApplication sharedApplication].delegate;
+    AppDelegate *appDelegate = (AppDelegate *)[UIApplication sharedApplication].delegate;
     NSManagedObjectContext *managedContext = [appDelegate managedObjectContext];
     [managedContext deleteObject:task];
     NSError* error = nil;
@@ -492,7 +481,7 @@
 */
 - (void)finishTask:(Task *)task confirm:(BOOL)isToFinish
 {
-    AppDelegate *appDelegate = [UIApplication sharedApplication].delegate;
+    AppDelegate *appDelegate = (AppDelegate *)[UIApplication sharedApplication].delegate;
     NSMutableString *finishDayString = [task.finishDay mutableCopy];
     NSRange range = NSMakeRange((NSUInteger) (_weekday - 1), 1);
     if (isToFinish) {
@@ -534,7 +523,7 @@
 }
 - (void)resetAllTaskFinishDay
 {
-    AppDelegate *appDelegate = [UIApplication sharedApplication].delegate;
+    AppDelegate *appDelegate = (AppDelegate *)[UIApplication sharedApplication].delegate;
     NSManagedObjectContext *managedContext = appDelegate.managedObjectContext;
     for (Task *task in _tasks)
     {
@@ -591,8 +580,6 @@
             [_tableView reloadSections:[NSIndexSet indexSetWithIndex:0] withRowAnimation:UITableViewRowAnimationFade];
             break;
         }
-
-
         default:
             NSLog(@"list button was pressed");
             break;
@@ -606,10 +593,18 @@
         if([task.finishDay characterAtIndex:(NSUInteger) _weekday -1 ] == '0' && [task.activeDay characterAtIndex:(NSUInteger)_weekday-1] == '1')
             remainedTask++;
     }
-    if(remainedTask == 0)
-        {
-            _topLabel.text = @"已完成今天所有日常";
-            _topLabel.backgroundColor = UIColorFromRGB(0x0BD318);
+
+    if(_tasks.count == 0)
+    {
+         _topLabel.text = @"日常列表为空,请添加日常";
+         _topLabel.backgroundColor = [UIColor grayColor];
+
+    }
+    else if(remainedTask == 0)
+    {
+        _topLabel.text = @"已完成今天所有日常";
+        _topLabel.backgroundColor = UIColorFromRGB(0x0BD318);
+        [self recordFinishStatus:YES date:[NSDate date]];
 
     }
     else
@@ -617,8 +612,50 @@
         NSString *text = [NSString stringWithFormat:@"今天还有%d个日常未完成",remainedTask];
         _topLabel.text = text;
         _topLabel.backgroundColor = [UIColor grayColor];
+        [self recordFinishStatus:NO  date:[NSDate date]];
     }
+
 }
+//记录完成任务的一天
+- (void)recordFinishStatus:(BOOL)isFinish  date: (NSDate *)date
+{
+    AppDelegate *appDelegate = (AppDelegate *)[UIApplication sharedApplication].delegate;
+    NSManagedObjectContext *managedContext  = [appDelegate managedObjectContext];
+    if (managedContext != nil) {
+        NSCalendar *gregorianCalendar = [[NSCalendar alloc] initWithCalendarIdentifier:NSCalendarIdentifierGregorian];
+        NSDateComponents *components = [gregorianCalendar components: (  NSMonthCalendarUnit |  NSDayCalendarUnit | NSYearCalendarUnit )
+                                                            fromDate:date];
+        //指定数据表
+        NSEntityDescription *entity = [NSEntityDescription entityForName:@"CalendarTaskDay" inManagedObjectContext:managedContext];
+        //新建一个请求命令，相当于select
+        NSFetchRequest *request = [[NSFetchRequest alloc]init];
+        //request 指定数据表
+        [request setEntity:entity];
+        //使用predicate指定查询规则
+        NSPredicate *predicate = [NSPredicate predicateWithFormat:@" (year == %d) AND (month == %d) AND (day == %d)" ,components.year,components.month,components.day];
+       [request setPredicate:predicate];
+        //错误描述
+        NSError *error;
+        NSArray *calendarDaysArray = [managedContext executeFetchRequest:request error:&error];
 
+        if(calendarDaysArray.count > 0 )
+        {
+            CalendarTaskDay *taskDay = calendarDaysArray[0];
+            taskDay.isFinishAllTask = @(isFinish);
+            NSLog(@"success to change the status of a day!!Status : %d",isFinish);
+        }
+        else
+        {
+            CalendarTaskDay *taskDay = [NSEntityDescription insertNewObjectForEntityForName:@"CalendarTaskDay" inManagedObjectContext:managedContext];
+            taskDay.isFinishAllTask = @(isFinish);
+            taskDay.year = @(components.year);
+            taskDay.month = @(components.month);
+            taskDay.day = @(components.day);
+            NSLog(@"success to insert a new day!!Status : %d",isFinish);
+        }
 
+    }
+    [appDelegate saveContext];
+
+}
 @end

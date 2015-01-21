@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		113E709B4A9A22F3D8D46B7D /* libPods.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 75B639789799C0D212BA18E4 /* libPods.a */; };
 		6232251EEC6EE04CE3CD19A9 /* SideMenuViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 62322CE001732C1CD65063D6 /* SideMenuViewController.m */; };
+		DA3347A81A6F56E8004A57D4 /* CalendarTaskDay.m in Sources */ = {isa = PBXBuildFile; fileRef = DA3347A71A6F56E8004A57D4 /* CalendarTaskDay.m */; };
 		DA4E36971A415CA9007157FC /* AddViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = DA4E36961A415CA9007157FC /* AddViewController.m */; };
 		DA95C2891A36A349003B1773 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = DA95C2881A36A349003B1773 /* main.m */; };
 		DA95C28C1A36A349003B1773 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = DA95C28B1A36A349003B1773 /* AppDelegate.m */; };
@@ -19,8 +20,8 @@
 		DA95C2A61A36A349003B1773 /* DaliyTaskTests.m in Sources */ = {isa = PBXBuildFile; fileRef = DA95C2A51A36A349003B1773 /* DaliyTaskTests.m */; };
 		DA95C2B91A36D2A7003B1773 /* MainTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = DA95C2B81A36D2A7003B1773 /* MainTableViewController.m */; };
 		DA95C2BE1A36F0FC003B1773 /* MainTaskTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = DA95C2BD1A36F0FC003B1773 /* MainTaskTableViewCell.m */; };
-		DA95C2C11A37206D003B1773 /* Task.m in Sources */ = {isa = PBXBuildFile; fileRef = DA95C2C01A37206D003B1773 /* Task.m */; };
 		DADC0F8C1A5AE3E70008D169 /* CalendarViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = DADC0F8B1A5AE3E70008D169 /* CalendarViewController.m */; };
+		DAFF13A11A6E994000308A9A /* Task.m in Sources */ = {isa = PBXBuildFile; fileRef = DAFF13A01A6E994000308A9A /* Task.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -38,6 +39,8 @@
 		62322DBA13BD915F6A86D61C /* SideMenuViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SideMenuViewController.h; sourceTree = "<group>"; };
 		75B639789799C0D212BA18E4 /* libPods.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libPods.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		D2AB472CA331FA0DCA6CA535 /* Pods.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.release.xcconfig; path = "Pods/Target Support Files/Pods/Pods.release.xcconfig"; sourceTree = "<group>"; };
+		DA3347A61A6F56E8004A57D4 /* CalendarTaskDay.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CalendarTaskDay.h; path = Model/CalendarTaskDay.h; sourceTree = "<group>"; };
+		DA3347A71A6F56E8004A57D4 /* CalendarTaskDay.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CalendarTaskDay.m; path = Model/CalendarTaskDay.m; sourceTree = "<group>"; };
 		DA4E36951A415CA9007157FC /* AddViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AddViewController.h; path = AddPage/AddViewController.h; sourceTree = "<group>"; };
 		DA4E36961A415CA9007157FC /* AddViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = AddViewController.m; path = AddPage/AddViewController.m; sourceTree = "<group>"; };
 		DA95C2831A36A348003B1773 /* DaliyTask.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = DaliyTask.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -57,10 +60,10 @@
 		DA95C2BA1A36DCBE003B1773 /* AppUtility.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = AppUtility.h; path = Utility/AppUtility.h; sourceTree = "<group>"; };
 		DA95C2BC1A36F0FC003B1773 /* MainTaskTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MainTaskTableViewCell.h; sourceTree = "<group>"; };
 		DA95C2BD1A36F0FC003B1773 /* MainTaskTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MainTaskTableViewCell.m; sourceTree = "<group>"; };
-		DA95C2BF1A37206D003B1773 /* Task.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Task.h; path = Model/Task.h; sourceTree = "<group>"; };
-		DA95C2C01A37206D003B1773 /* Task.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = Task.m; path = Model/Task.m; sourceTree = "<group>"; };
 		DADC0F8A1A5AE3E70008D169 /* CalendarViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CalendarViewController.h; path = Calendar/CalendarViewController.h; sourceTree = "<group>"; };
 		DADC0F8B1A5AE3E70008D169 /* CalendarViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = CalendarViewController.m; path = Calendar/CalendarViewController.m; sourceTree = "<group>"; };
+		DAFF139F1A6E994000308A9A /* Task.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Task.h; path = Model/Task.h; sourceTree = "<group>"; };
+		DAFF13A01A6E994000308A9A /* Task.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = Task.m; path = Model/Task.m; sourceTree = "<group>"; };
 		F9197A014C1E15CB794749B8 /* Pods.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.debug.xcconfig; path = "Pods/Target Support Files/Pods/Pods.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -187,8 +190,10 @@
 		DA95C2B21A36A402003B1773 /* Model */ = {
 			isa = PBXGroup;
 			children = (
-				DA95C2BF1A37206D003B1773 /* Task.h */,
-				DA95C2C01A37206D003B1773 /* Task.m */,
+				DAFF139F1A6E994000308A9A /* Task.h */,
+				DAFF13A01A6E994000308A9A /* Task.m */,
+				DA3347A61A6F56E8004A57D4 /* CalendarTaskDay.h */,
+				DA3347A71A6F56E8004A57D4 /* CalendarTaskDay.m */,
 			);
 			name = Model;
 			sourceTree = "<group>";
@@ -356,7 +361,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				DA95C2C11A37206D003B1773 /* Task.m in Sources */,
+				DAFF13A11A6E994000308A9A /* Task.m in Sources */,
+				DA3347A81A6F56E8004A57D4 /* CalendarTaskDay.m in Sources */,
 				DADC0F8C1A5AE3E70008D169 /* CalendarViewController.m in Sources */,
 				DA95C28C1A36A349003B1773 /* AppDelegate.m in Sources */,
 				DA95C2B91A36D2A7003B1773 /* MainTableViewController.m in Sources */,

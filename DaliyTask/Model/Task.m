@@ -2,23 +2,25 @@
 //  Task.m
 //  DaliyTask
 //
-//  Created by LiBin on 14/12/9.
-//  Copyright (c) 2014年 LiBin. All rights reserved.
+//  Created by LiBin on 15/1/20.
+//  Copyright (c) 2015年 LiBin. All rights reserved.
 //
 
 #import "Task.h"
+#import "CalendarTaskDay.h"
 
 
 @implementation Task
 
-@dynamic taskId;
-@dynamic name;
-@dynamic isFixed;
 @dynamic activeDay;
-@dynamic finishDay;
-@dynamic times;
-@dynamic finishTimes;
-@dynamic rank;
 @dynamic createDate;
+@dynamic finishDay;
+@dynamic finishTimes;
+@dynamic isFixed;
+@dynamic name;
+@dynamic rank;
+@dynamic taskId;
+@dynamic times;
+@dynamic isRemained;
 
 @end
