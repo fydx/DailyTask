@@ -30,8 +30,6 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     [self setNavigationBar];
-    //[self loadTask];
-    //[self.view addSubview:_tableView];
     _topLabel = [[UILabel alloc] init];
     _topLabel.hidden= NO;
     [self.view addSubview:_topLabel];
@@ -52,7 +50,7 @@
     _topLabel.textColor= [UIColor whiteColor];
     _topLabel.textAlignment = NSTextAlignmentCenter;
     [_topLabel setFont:[UIFont systemFontOfSize:14]];
-    //长按排序部分,勿删
+    //长按排序部分,暂时屏蔽掉
 //      UILongPressGestureRecognizer *longPress = [[UILongPressGestureRecognizer alloc]
 //            initWithTarget:self action:@selector(longPressGestureRecognized:)];
 //    longPress.minimumPressDuration = 0.85;
@@ -81,12 +79,11 @@
     // Dispose of any resources that can be recreated.
 }
 
+//设置View的位置
 - (void)setViews
 {
     [_topLabel mas_makeConstraints:^(MASConstraintMaker *maker)
     {
-//       maker.left.equalTo(self.view.mas_left);
-//        maker.right.equalTo(self.view.mas_right);
         maker.top.equalTo(self.view);
         maker.height.greaterThanOrEqualTo(@30);
         maker.width.equalTo(self.view);
@@ -100,6 +97,8 @@
         maker.bottom.equalTo(self.view);
     }];
 }
+
+//长按cell之后的动作
 - (IBAction)longPressGestureRecognized:(id)sender {
 
     UILongPressGestureRecognizer *longPress = (UILongPressGestureRecognizer *)sender;
@@ -181,6 +180,9 @@
 
     // More coming soon...
 }
+
+#pragma mark - Navigation
+
 //设置导航栏
 - (void)setNavigationBar
 {    self.edgesForExtendedLayout = UIRectEdgeNone;
@@ -191,15 +193,16 @@
     [[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleLightContent];
     self.navigationController.navigationBar.titleTextAttributes = @{NSForegroundColorAttributeName: UIColorFromRGB(0xffffff)};
     UIBarButtonItem *addItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAdd target:self action:@selector(startAddViewController)];
-    UIBarButtonItem *deleteItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemTrash target:self action:@selector(sampleAnim)];
-    UIBarButtonItem *shareItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemBookmarks target:self action:@selector(changeEditingMode)];
+    UIBarButtonItem *deleteItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemTrash target:self action:@selector(startCalendarViewController)];
+    UIBarButtonItem *shareItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemBookmarks target:self action:@selector(showMenu)];
     NSArray *actionButtonItems = @[addItem,deleteItem];
     self.navigationItem.rightBarButtonItems = actionButtonItems;
     self.navigationItem.leftBarButtonItem = shareItem;
 
-
 }
-- (void)sampleAnim
+#pragma mark - Start other controller
+
+- (void)startCalendarViewController
 {
     CalendarViewController *calendarViewController = [[CalendarViewController alloc] init];
     [self.navigationController pushViewController:calendarViewController animated:YES];
@@ -228,19 +231,14 @@
     addViewController.taskId = [editTask.taskId integerValue];
     [self.navigationController pushViewController:addViewController animated:YES];
 }
-//进入/取消修改模式
-- (void) changeEditingMode
+//出现菜单
+- (void) showMenu
 {
     [self.sideMenuViewController presentLeftMenuViewController];
 
-    // [self.]
-//    [_tableView setEditing:!_tableView.editing animated:YES];
-//    if (_tableView.editing == NO) {
-//
-//       [_tableView reloadSections:[NSIndexSet indexSetWithIndex:0] withRowAnimation:UITableViewRowAnimationFade];
-//    }
-
 }
+
+#pragma mark - Modify Data (use CoreData)
 // 从数据库中读取任务数据
 - (void)loadTask
 {
@@ -261,7 +259,7 @@
 
 }
 
-//已弃用方法，添加一个预置的task
+//调试，添加一个预置的task
 - (void)addFakeTask
 {
     //通信中心，通过此单例找到appDeleage中的数据库
@@ -287,7 +285,59 @@
     }
 
 }
+//删除
+- (void)deleteTask: (Task *)task
+{  //NSFetchRequest *fetchRequest = [[NSFetchRequest alloc] init];
+    AppDelegate *appDelegate = (AppDelegate *)[UIApplication sharedApplication].delegate;
+    NSManagedObjectContext *managedContext = [appDelegate managedObjectContext];
+    [managedContext deleteObject:task];
+    NSError* error = nil;
+    [managedContext save:&error];
+    
+}
 
+//记录完成任务的一天
+- (void)recordFinishStatus:(BOOL)isFinish  date: (NSDate *)date
+{
+    AppDelegate *appDelegate = (AppDelegate *)[UIApplication sharedApplication].delegate;
+    NSManagedObjectContext *managedContext  = [appDelegate managedObjectContext];
+    if (managedContext != nil) {
+        NSCalendar *gregorianCalendar = [[NSCalendar alloc] initWithCalendarIdentifier:NSCalendarIdentifierGregorian];
+        NSDateComponents *components = [gregorianCalendar components: (  NSCalendarUnitMonth |  NSCalendarUnitDay | NSCalendarUnitYear )
+                                                            fromDate:date];
+        //指定数据表
+        NSEntityDescription *entity = [NSEntityDescription entityForName:@"CalendarTaskDay" inManagedObjectContext:managedContext];
+        //新建一个请求命令，相当于select
+        NSFetchRequest *request = [[NSFetchRequest alloc]init];
+        //request 指定数据表
+        [request setEntity:entity];
+        //使用predicate指定查询规则
+        NSPredicate *predicate = [NSPredicate predicateWithFormat:@" (year == %d) AND (month == %d) AND (day == %d)" ,components.year,components.month,components.day];
+        [request setPredicate:predicate];
+        //错误描述
+        NSError *error;
+        NSArray *calendarDaysArray = [managedContext executeFetchRequest:request error:&error];
+        
+        if(calendarDaysArray.count > 0 )
+        {
+            CalendarTaskDay *taskDay = calendarDaysArray[0];
+            taskDay.isFinishAllTask = @(isFinish);
+            NSLog(@"success to change the status of a day!!Status : %d",isFinish);
+        }
+        else
+        {
+            CalendarTaskDay *taskDay = [NSEntityDescription insertNewObjectForEntityForName:@"CalendarTaskDay" inManagedObjectContext:managedContext];
+            taskDay.isFinishAllTask = @(isFinish);
+            taskDay.year = @(components.year);
+            taskDay.month = @(components.month);
+            taskDay.day = @(components.day);
+            NSLog(@"success to insert a new day!!Status : %d",isFinish);
+        }
+        
+    }
+    [appDelegate saveContext];
+    
+}
 
 #pragma mark - Table view data source
 
@@ -349,18 +399,8 @@
     
     return cell;
 }
-//按下cell的完成按钮
-- (void)cellButtonPressed:(UIButton *)sender
-{
-     sender.selected = !sender.selected;
-   // NSLog(@"location : %d ,transfer select status : %d",sender.tag,sender.selected);
-    _statusDict[@(sender.tag)] = @(sender.selected);
-   // NSLog(@"location : %d,bool value : %d", sender.tag,[(NSNumber *) _statusDict[@(sender.tag)] boolValue]);
-   // NSLog(@"transfer select status in dict: %d", [_statusDict[
-      //      @(sender.tag)] boolValue]);
-    [self finishTask:_tasks[(NSUInteger)sender.tag] confirm:sender.selected];
 
-}
+
 
 // Override to support conditional editing of the table view.
 - (BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath {
@@ -409,26 +449,79 @@
     return YES;
 }
 
-//删除
-- (void)deleteTask: (Task *)task
-{  //NSFetchRequest *fetchRequest = [[NSFetchRequest alloc] init];
+#pragma mark - Cell operations
+
+//按下cell的完成按钮
+- (void)cellButtonPressed:(UIButton *)sender
+{
+    sender.selected = !sender.selected;
+    // NSLog(@"location : %d ,transfer select status : %d",sender.tag,sender.selected);
+    _statusDict[@(sender.tag)] = @(sender.selected);
+    // NSLog(@"location : %d,bool value : %d", sender.tag,[(NSNumber *) _statusDict[@(sender.tag)] boolValue]);
+    // NSLog(@"transfer select status in dict: %d", [_statusDict[
+    //      @(sender.tag)] boolValue]);
+    [self finishTask:_tasks[(NSUInteger)sender.tag] confirm:sender.selected];
+    
+}
+
+//左滑动的按钮
+- (void)swipeableTableViewCell:(SWTableViewCell *)cell didTriggerLeftUtilityButtonWithIndex:(NSInteger)index
+{
+    switch (index) {
+        case 0:
+            NSLog(@"left button is pressed");
+            break;
+            
+            
+    }
+};
+
+//右滑动按钮
+- (void)swipeableTableViewCell:(SWTableViewCell *)cell didTriggerRightUtilityButtonWithIndex:(NSInteger)index
+{
+    switch (index) {
+        case 0:
+        {
+            NSIndexPath *indexPath = [_tableView indexPathForCell:cell];
+            [self startEditTaskViewController:(NSUInteger) indexPath.row];
+            break;
+        }
+            
+        case 1:
+        {
+            NSIndexPath *indexPath = [_tableView indexPathForCell:cell];
+            [self deleteTask:_tasks[(NSUInteger) indexPath.row]];
+            [_tasks removeObjectAtIndex:(NSUInteger) indexPath.row];
+            [_tableView reloadSections:[NSIndexSet indexSetWithIndex:0] withRowAnimation:UITableViewRowAnimationFade];
+            break;
+        }
+        default:
+            NSLog(@"list button was pressed");
+            break;
+    }
+}
+
+//完成一个任务
+
+- (void)finishTask:(Task *)task confirm:(BOOL)isToFinish
+{
     AppDelegate *appDelegate = (AppDelegate *)[UIApplication sharedApplication].delegate;
-    NSManagedObjectContext *managedContext = [appDelegate managedObjectContext];
-    [managedContext deleteObject:task];
-    NSError* error = nil;
-    [managedContext save:&error];
-
+    NSMutableString *finishDayString = [task.finishDay mutableCopy];
+    NSRange range = NSMakeRange((NSUInteger) (_weekday - 1), 1);
+    if (isToFinish) {
+        [finishDayString replaceCharactersInRange:range withString:@"1"];
+    }
+    else
+    {
+        [finishDayString replaceCharactersInRange:range withString:@"0"];
+    }
+    task.finishDay = [finishDayString copy];
+    //NSLog(@"task finishday %@",task.finishDay);
+    [appDelegate saveContext];
+    [self updateTopBar];
+    
 }
-
-/*
-#pragma mark - Navigation
-
-// In a storyboard-based application, you will often want to do a little preparation before navigation
-- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
-    // Get the new view controller using [segue destinationViewController].
-    // Pass the selected object to the new view controller.
-}
-*/
+#pragma mark - Other assist method
 //判断是否是今天的任务
 
 - (BOOL)isTodayTask: (Task *)task
@@ -476,28 +569,9 @@
             }] mutableCopy];
 }
 
-/**
-* 完成一个任务
-*/
-- (void)finishTask:(Task *)task confirm:(BOOL)isToFinish
-{
-    AppDelegate *appDelegate = (AppDelegate *)[UIApplication sharedApplication].delegate;
-    NSMutableString *finishDayString = [task.finishDay mutableCopy];
-    NSRange range = NSMakeRange((NSUInteger) (_weekday - 1), 1);
-    if (isToFinish) {
-          [finishDayString replaceCharactersInRange:range withString:@"1"];
-    }
-    else
-    {
-       [finishDayString replaceCharactersInRange:range withString:@"0"];
-    }
-    task.finishDay = [finishDayString copy];
-    //NSLog(@"task finishday %@",task.finishDay);
-    [appDelegate saveContext];
-    [self updateTopBar];
 
-}
-//更新完成状态
+
+//更新viewcontroller中避免checkbox混乱的dict
 - (void)updateFinishStatus
 {
 
@@ -547,44 +621,7 @@
     return snapshot;
 }
 
-// click event on left utility button
-- (void)swipeableTableViewCell:(SWTableViewCell *)cell didTriggerLeftUtilityButtonWithIndex:(NSInteger)index
-{
-    switch (index) {
-        case 0:
-            NSLog(@"check button was pressed");
-            break;
 
-        default:
-            NSLog(@"list button was pressed");
-            break;
-    }
-};
-
-// click event on right utility button
-- (void)swipeableTableViewCell:(SWTableViewCell *)cell didTriggerRightUtilityButtonWithIndex:(NSInteger)index
-{
-    switch (index) {
-        case 0:
-        {
-            NSIndexPath *indexPath = [_tableView indexPathForCell:cell];
-            [self startEditTaskViewController:(NSUInteger) indexPath.row];
-            break;
-        }
-
-        case 1:
-        {
-            NSIndexPath *indexPath = [_tableView indexPathForCell:cell];
-            [self deleteTask:_tasks[(NSUInteger) indexPath.row]];
-            [_tasks removeObjectAtIndex:(NSUInteger) indexPath.row];
-            [_tableView reloadSections:[NSIndexSet indexSetWithIndex:0] withRowAnimation:UITableViewRowAnimationFade];
-            break;
-        }
-        default:
-            NSLog(@"list button was pressed");
-            break;
-    }
-}
 - (void)updateTopBar
 {
     int remainedTask  =  0 ;
@@ -616,46 +653,5 @@
     }
 
 }
-//记录完成任务的一天
-- (void)recordFinishStatus:(BOOL)isFinish  date: (NSDate *)date
-{
-    AppDelegate *appDelegate = (AppDelegate *)[UIApplication sharedApplication].delegate;
-    NSManagedObjectContext *managedContext  = [appDelegate managedObjectContext];
-    if (managedContext != nil) {
-        NSCalendar *gregorianCalendar = [[NSCalendar alloc] initWithCalendarIdentifier:NSCalendarIdentifierGregorian];
-        NSDateComponents *components = [gregorianCalendar components: (  NSMonthCalendarUnit |  NSDayCalendarUnit | NSYearCalendarUnit )
-                                                            fromDate:date];
-        //指定数据表
-        NSEntityDescription *entity = [NSEntityDescription entityForName:@"CalendarTaskDay" inManagedObjectContext:managedContext];
-        //新建一个请求命令，相当于select
-        NSFetchRequest *request = [[NSFetchRequest alloc]init];
-        //request 指定数据表
-        [request setEntity:entity];
-        //使用predicate指定查询规则
-        NSPredicate *predicate = [NSPredicate predicateWithFormat:@" (year == %d) AND (month == %d) AND (day == %d)" ,components.year,components.month,components.day];
-       [request setPredicate:predicate];
-        //错误描述
-        NSError *error;
-        NSArray *calendarDaysArray = [managedContext executeFetchRequest:request error:&error];
 
-        if(calendarDaysArray.count > 0 )
-        {
-            CalendarTaskDay *taskDay = calendarDaysArray[0];
-            taskDay.isFinishAllTask = @(isFinish);
-            NSLog(@"success to change the status of a day!!Status : %d",isFinish);
-        }
-        else
-        {
-            CalendarTaskDay *taskDay = [NSEntityDescription insertNewObjectForEntityForName:@"CalendarTaskDay" inManagedObjectContext:managedContext];
-            taskDay.isFinishAllTask = @(isFinish);
-            taskDay.year = @(components.year);
-            taskDay.month = @(components.month);
-            taskDay.day = @(components.day);
-            NSLog(@"success to insert a new day!!Status : %d",isFinish);
-        }
-
-    }
-    [appDelegate saveContext];
-
-}
 @end
