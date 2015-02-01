@@ -50,6 +50,7 @@
         case 1:
             [self.sideMenuViewController setContentViewController:[[UINavigationController alloc] initWithRootViewController:[[CalendarViewController alloc] init]]
                                                          animated:YES];
+          //  [self startCalendarViewController];
             [self.sideMenuViewController hideMenuViewController];
             break;
         default:
@@ -57,6 +58,11 @@
     }
 }
 
+- (void)startCalendarViewController
+{
+    CalendarViewController *calendarViewController = [[CalendarViewController alloc] init];
+    [self.navigationController pushViewController:calendarViewController animated:YES];
+}
 #pragma mark -
 #pragma mark UITableView Datasource
 
@@ -90,7 +96,7 @@
         cell.selectedBackgroundView = [[UIView alloc] init];
     }
 
-    NSArray *titles = @[@"Home", @"Calendar"];
+    NSArray *titles = @[@"日常列表", @"日常日历"];
     NSArray *images = @[@"sidemenu_icon_home", @"sidemenu_icon_calendar"];
     cell.textLabel.text = titles[indexPath.row];
     cell.imageView.image = [UIImage imageNamed:images[indexPath.row]];

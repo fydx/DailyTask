@@ -193,9 +193,9 @@
     [[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleLightContent];
     self.navigationController.navigationBar.titleTextAttributes = @{NSForegroundColorAttributeName: UIColorFromRGB(0xffffff)};
     UIBarButtonItem *addItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAdd target:self action:@selector(startAddViewController)];
-    UIBarButtonItem *deleteItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemTrash target:self action:@selector(startCalendarViewController)];
+   // UIBarButtonItem *deleteItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemTrash target:self action:@selector(startCalendarViewController)];
     UIBarButtonItem *shareItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemBookmarks target:self action:@selector(showMenu)];
-    NSArray *actionButtonItems = @[addItem,deleteItem];
+    NSArray *actionButtonItems = @[addItem];
     self.navigationItem.rightBarButtonItems = actionButtonItems;
     self.navigationItem.leftBarButtonItem = shareItem;
 
@@ -322,7 +322,7 @@
         {
             CalendarTaskDay *taskDay = calendarDaysArray[0];
             taskDay.isFinishAllTask = @(isFinish);
-            NSLog(@"success to change the status of a day!!Status : %d",isFinish);
+           // NSLog(@"success to change the status of a day!!Status : %d",isFinish);
         }
         else
         {
@@ -331,7 +331,7 @@
             taskDay.year = @(components.year);
             taskDay.month = @(components.month);
             taskDay.day = @(components.day);
-            NSLog(@"success to insert a new day!!Status : %d",isFinish);
+           // NSLog(@"success to insert a new day!!Status : %d",isFinish);
         }
         
     }
@@ -375,7 +375,7 @@
         if([_statusDict[@(indexPath.row)] boolValue])
         {
             cell.taskFinishButton.selected = YES;
-            NSLog(@"rowId : %ld, isClicked : %d",(long)[cellTask.taskId integerValue],[(NSNumber *) _statusDict[@(indexPath.row)] boolValue]);
+           // NSLog(@"rowId : %ld, isClicked : %d",(long)[cellTask.taskId integerValue],[(NSNumber *) _statusDict[@(indexPath.row)] boolValue]);
         }
         else
         {
@@ -419,7 +419,7 @@
     }
     else
     {
-        return    UITableViewCellEditingStyleNone;
+        return UITableViewCellEditingStyleNone;
     }
 
 }

@@ -14,6 +14,9 @@
 @interface CalendarViewController ()
 @property (strong,nonatomic) NSMutableDictionary *eventsByDate;
 @property (strong, nonatomic) NSMutableArray *calendarTaskDays;
+@property (strong, nonatomic) UILabel *continuousDayLabel;
+@property (strong, nonatomic) UILabel *maxDayLabel;
+
 @end
 
 @implementation CalendarViewController
@@ -22,13 +25,15 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+    [self setNavigationBar];
     self.edgesForExtendedLayout = UIRectEdgeNone;
     self.view.backgroundColor = [UIColor whiteColor];
     _calendarContentView  = [[JTCalendarContentView alloc] init];
     _calendarMenuView = [[JTCalendarMenuView alloc] init];
     self.calendar = [JTCalendar new];
-
-     // All modifications on calendarAppearance have to be done before setMenuMonthsView and setContentView
+    self.continuousDayLabel = [[UILabel alloc] init];
+    self.maxDayLabel = [[UILabel alloc] init];
+    // All modifications on calendarAppearance have to be done before setMenuMonthsView and setContentView
     // Or you will have to call reloadAppearance
 
         self.calendar.calendarAppearance.calendar.firstWeekday = 1; // Sunday == 1, Saturday == 7
@@ -75,14 +80,17 @@
     [self.calendar setDataSource:self];
     [self.view addSubview:_calendarContentView];
     [self.view addSubview:_calendarMenuView];
+    [self.view addSubview:_continuousDayLabel];
+    [self.view addSubview:_maxDayLabel];
     [self setMASLayout];
     [self createEvents];
+    [self setDaysLabel];
+    //[self getContiousDays:_calendarTaskDays];
 }
 
 - (void)viewDidAppear:(BOOL)animated
 {
     [super viewDidAppear:animated];
-    
     [self.calendar reloadData]; // Must be call in viewDidAppear
 }
 - (void)setMASLayout
@@ -99,11 +107,45 @@
         maker.height.greaterThanOrEqualTo(@350);
         maker.width.equalTo(self.view);
     }];
+    [_continuousDayLabel mas_makeConstraints:^(MASConstraintMaker *maker)
+    {
+       maker.top.equalTo(_calendarContentView.mas_bottom).offset(20);
+       maker.left.equalTo(self.view).offset(20);
+       maker.right.equalTo(self.view).offset(-20);
+
+    }];
+    [_maxDayLabel mas_makeConstraints:^(MASConstraintMaker *maker)
+    {
+       maker.top.equalTo(_continuousDayLabel.mas_bottom);
+        maker.left.equalTo(_continuousDayLabel);
+        maker.right.equalTo(_continuousDayLabel);
+    }];
+
+
+
 }
-- (void)selectDays
+
+- (void) setDaysLabel
+{
+     _continuousDayLabel.text = @"";
+    _maxDayLabel.text  = [NSString stringWithFormat:@"连续 %d 天完成日常",[self getContiousDays:_calendarTaskDays]];
+}
+- (void) selectDays
 {
     NSDate *date  =[[NSDate alloc]initWithTimeIntervalSinceNow:24*60*60];
     [self.calendar setCurrentDateSelected:date];
+}
+//设置导航栏
+- (void)setNavigationBar
+{    self.edgesForExtendedLayout = UIRectEdgeNone;
+    // 设置导航栏为蓝色，statusbar，title为白色
+    [self.navigationController.navigationBar setBarTintColor:UIColorFromRGB(BLUE)];
+    self.title = @"日常日历";
+    self.navigationController.navigationBar.tintColor = [UIColor whiteColor];
+    [[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleLightContent];
+    self.navigationController.navigationBar.titleTextAttributes = @{NSForegroundColorAttributeName: UIColorFromRGB(0xffffff)};
+
+
 }
 #pragma mark - Buttons callback
 
@@ -134,21 +176,21 @@
 
 - (void)calendarDidDateSelected:(JTCalendar *)calendar date:(NSDate *)date
 {
-    NSString *key = [[self dateFormatter] stringFromDate:date];
-    NSArray *events = _eventsByDate[key];
-    
-    NSLog(@"Date: %@ - %ld events", date, [events count]);
+//    NSString *key = [[self dateFormatter] stringFromDate:date];
+//    NSArray *events = _eventsByDate[key];
+//
+//    NSLog(@"Date: %@ - %ld events", date, [events count]);
 }
 
-- (void)calendarDidLoadPreviousPage
-{
-    NSLog(@"Previous page loaded");
-}
-
-- (void)calendarDidLoadNextPage
-{
-    NSLog(@"Next page loaded");
-}
+//- (void)calendarDidLoadPreviousPage
+//{
+//    NSLog(@"Previous page loaded");
+//}
+//
+//- (void)calendarDidLoadNextPage
+//{
+//    NSLog(@"Next page loaded");
+//}
 
 #pragma mark - Transition examples
 
@@ -230,7 +272,39 @@
     }
     
 }
+- (NSInteger)getContiousDays: (NSMutableArray *)taskdays
+{
+    NSInteger contiousDays = 0;
+    NSDate *prevDate = [NSDate date];
+    NSCalendar *gregorianCalendar = [[NSCalendar alloc] initWithCalendarIdentifier:NSCalendarIdentifierGregorian];
+    NSDateComponents *components = [gregorianCalendar components: (  NSCalendarUnitMonth |  NSCalendarUnitDay | NSCalendarUnitYear )
+                                                        fromDate:prevDate];
+    prevDate = [gregorianCalendar dateFromComponents:components];
+   // NSLog(@"hour info : %d",components.hour);
+    for (int i = taskdays.count-1 ; i >= 0 ; i--)
+    {
 
+        CalendarTaskDay *calendarTaskDay = taskdays[(NSUInteger) i];
+        NSDateComponents *dateComponents = [[NSDateComponents alloc]init];
+        dateComponents.year = [calendarTaskDay.year integerValue];
+        dateComponents.month = [calendarTaskDay.month integerValue];
+        dateComponents.day = [calendarTaskDay.day integerValue];
+        NSDate *date = [gregorianCalendar dateFromComponents:dateComponents];
+        if( [prevDate timeIntervalSinceDate:date] <= 24*60*60)
+        {
+            contiousDays ++ ;
+            NSLog(@"add date!!");
+            prevDate = date;
+        }
+        else
+        {
+            break;
+        }
+
+
+    }
+    return contiousDays;
+}
 -(void)getCalendarTaskDays
 {
     AppDelegate *appDelegate = (AppDelegate *)[UIApplication sharedApplication].delegate;
@@ -252,14 +326,5 @@
 
     }
 }
-/*
-#pragma mark - Navigation
-
-// In a storyboard-based application, you will often want to do a little preparation before navigation
-- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
-    // Get the new view controller using [segue destinationViewController].
-    // Pass the selected object to the new view controller.
-}
-*/
 
 @end
