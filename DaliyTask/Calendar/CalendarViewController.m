@@ -127,8 +127,8 @@
 
 - (void) setDaysLabel
 {
-     _continuousDayLabel.text = @"";
-    _maxDayLabel.text  = [NSString stringWithFormat:@"连续 %d 天完成日常",[self getContiousDays:_calendarTaskDays]];
+     _continuousDayLabel.text = [NSString stringWithFormat:@"最多连续 %d 天完成日常", [self getMaxDays:_calendarTaskDays]];
+    _maxDayLabel.text  = [NSString stringWithFormat:@"已经连续 %d 天完成日常",[self getContiousDays:_calendarTaskDays]];
 }
 - (void) selectDays
 {
@@ -290,7 +290,7 @@
         dateComponents.month = [calendarTaskDay.month integerValue];
         dateComponents.day = [calendarTaskDay.day integerValue];
         NSDate *date = [gregorianCalendar dateFromComponents:dateComponents];
-        if( [prevDate timeIntervalSinceDate:date] <= 24*60*60)
+        if( [prevDate timeIntervalSinceDate:date] <= 24*60*60 && [calendarTaskDay.isFinishAllTask boolValue])
         {
             contiousDays ++ ;
             NSLog(@"add date!!");
@@ -304,6 +304,38 @@
 
     }
     return contiousDays;
+}
+- (NSInteger)getMaxDays :(NSMutableArray *)taskdays
+{
+    NSInteger maxDays = 0;
+    NSDate *prevDate = [NSDate date];
+    NSCalendar *gregorianCalendar = [[NSCalendar alloc] initWithCalendarIdentifier:NSCalendarIdentifierGregorian];
+    NSDateComponents *components = [gregorianCalendar components: (  NSCalendarUnitMonth |  NSCalendarUnitDay | NSCalendarUnitYear )
+                                                        fromDate:prevDate];
+    prevDate = [gregorianCalendar dateFromComponents:components];
+    // NSLog(@"hour info : %d",components.hour);
+    for (int i = taskdays.count-1 ; i >= 0 ; i--)
+    {
+
+        CalendarTaskDay *calendarTaskDay = taskdays[(NSUInteger) i];
+        NSDateComponents *dateComponents = [[NSDateComponents alloc]init];
+        dateComponents.year = [calendarTaskDay.year integerValue];
+        dateComponents.month = [calendarTaskDay.month integerValue];
+        dateComponents.day = [calendarTaskDay.day integerValue];
+        NSDate *date = [gregorianCalendar dateFromComponents:dateComponents];
+        if( [prevDate timeIntervalSinceDate:date] <= 24*60*60 && [calendarTaskDay.isFinishAllTask boolValue])
+        {
+            maxDays ++ ;
+        }
+        else
+        {
+            maxDays = 0;
+        }
+        prevDate = date;
+
+
+    }
+    return maxDays;
 }
 -(void)getCalendarTaskDays
 {
